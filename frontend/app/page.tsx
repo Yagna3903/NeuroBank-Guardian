@@ -57,10 +57,9 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 pb-20 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0a0a1a] to-black text-white font-chakra overflow-hidden bg-fixed">
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 pb-20 bg-black text-white font-chakra overflow-hidden">
 
-      {/* Background Ambience */}
-      <div className="absolute inset-0 pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
+      {/* Background Ambience Removed */}
 
       {currentStep !== "dashboard" ? (
         <div className="relative z-10 w-full max-w-lg p-10 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl border-t border-l border-white/20 rounded-[2rem] shadow-2xl shadow-black/50">
