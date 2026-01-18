@@ -72,11 +72,15 @@ class AgentService:
         amount = float(action_payload.get("amount", 0))
         
         # 1. Determine Source Account
-        source_type = "Chequing"
-        if action_type == "TRANSFER":
-             target_type = action_payload.get("to_account_type", "Savings")
-             if "chequing" in target_type.lower():
-                 source_type = "Savings"
+        # Priority: Explicit payload > Implied Transfer Source > Default Chequing
+        source_type = action_payload.get("from_account_type")
+        
+        if not source_type:
+            source_type = "Chequing" # Default
+            if action_type == "TRANSFER":
+                 target_type = action_payload.get("to_account_type", "Savings")
+                 if "chequing" in target_type.lower():
+                     source_type = "Savings"
         
         source_acc = next((acc for acc in user["accounts"] if source_type.lower() in acc["type"].lower()), None)
         if not source_acc:

@@ -99,51 +99,71 @@ class AudioService:
                 if not numbers: 
                     amount_to_pay = 100.0 # Default if no number
             
-            # 1. PAY INTENTS
-            if "pay" in normalized_text:
-                if "credit" in normalized_text or "visa" in normalized_text:
-                     if user_profile and user_profile.get("credit_cards"):
-                         card = user_profile["credit_cards"][0]
-                         if amount_to_pay == 0: 
-                             amount_to_pay = card["current_balance"]
-                         
-                         target_name = card["name"]
-                         action_payload = {
-                             "type": "PAY_CC",
-                             "amount": amount_to_pay,
-                             "card_id": card["card_id"],
-                             "title": f"Voice Payment to {card['name']}",
-                             "merchant": "Credit Card Payment"
-                         }
+            # Determine Source Account Context
+            from_account_type = "Chequing" # Default
+            if "from savings" in normalized_text or "from saving" in normalized_text:
+                 from_account_type = "Savings"
+            elif "from chequing" in normalized_text or "from checking" in normalized_text:
+                 from_account_type = "Chequing"
 
-                elif "bill" in normalized_text or "hydro" in normalized_text or "rent" in normalized_text:
-                     merchant = "Hydro One"
-                     bill_id = "bill_hydro_oct" 
-                     if "rent" in normalized_text:
-                         merchant = "Landlord Corp"
-                         bill_id = "bill_rent_nov"
+            # 1. CREDIT CARD ACTIONS (Pay or Transfer to Credit) - Handles "Transfer to Credit"
+            if "credit" in normalized_text or "visa" in normalized_text:
+                 if user_profile and user_profile.get("credit_cards"):
+                     card = user_profile["credit_cards"][0]
+                     if amount_to_pay == 0: 
+                         amount_to_pay = card["current_balance"]
                      
-                     target_name = merchant
+                     target_name = card["name"]
                      action_payload = {
-                         "type": "PAY_BILL",
-                         "amount": amount_to_pay if amount_to_pay > 0 else 150.0,
-                         "bill_id": bill_id,
-                         "merchant": merchant,
-                         "title": f"Voice Payment to {merchant}"
+                         "type": "PAY_CC",
+                         "amount": amount_to_pay,
+                         "card_id": card["card_id"],
+                         "from_account_type": from_account_type,
+                         "title": f"Payment to {card['name']}",
+                         "merchant": "Credit Card Payment"
                      }
+            
+            # 2. BILL ACTIONS
+            elif "bill" in normalized_text or "hydro" in normalized_text or "rent" in normalized_text:
+                 merchant = "Hydro One"
+                 bill_id = "bill_hydro_oct" 
+                 if "rent" in normalized_text:
+                     merchant = "Landlord Corp"
+                     bill_id = "bill_rent_nov"
+                 
+                 target_name = merchant
+                 action_payload = {
+                     "type": "PAY_BILL",
+                     "amount": amount_to_pay if amount_to_pay > 0 else 150.0,
+                     "bill_id": bill_id,
+                     "from_account_type": from_account_type,
+                     "merchant": merchant,
+                     "title": f"Payment to {merchant}"
+                 }
 
-            # 2. TRANSFER INTENTS
+            # 3. INTERNAL TRANSFERS
             elif "transfer" in normalized_text or "send" in normalized_text:
-                target_type = "Savings" # Default destination
-                if "chequing" in normalized_text or "checking" in normalized_text:
+                # Infer Target
+                target_type = "Savings"
+                if "to chequing" in normalized_text or "to checking" in normalized_text:
                     target_type = "Chequing"
+                elif "to savings" in normalized_text or "to saving" in normalized_text:
+                    target_type = "Savings"
+                else:
+                    # Infer target from source (flip it)
+                    target_type = "Chequing" if from_account_type == "Savings" else "Savings"
                 
+                # Prevent same-account transfer
+                if from_account_type == target_type:
+                     from_account_type = "Chequing" if target_type == "Savings" else "Savings"
+
                 target_name = f"{target_type} Account"
                 
                 action_payload = {
                     "type": "TRANSFER",
                     "amount": amount_to_pay,
                     "to_account_type": target_type,
+                    "from_account_type": from_account_type,
                     "title": f"Transfer to {target_name}",
                     "merchant": "Internal Transfer"
                 }
