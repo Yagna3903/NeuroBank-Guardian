@@ -1,0 +1,21 @@
+
+# Exclude local build artifacts and dependencies
+node_modules/
+.next/
+.git/
+.DS_Store
+
+# Explicitly include source code
+!app/
+!components/
+!public/
+!package.json
+!package-lock.json
+!tsconfig.json
+!next.config.mjs
+!next.config.js
+!postcss.config.js
+!tailwind.config.ts
+!output.css
+!Dockerfile
+!cloudbuild.yaml
