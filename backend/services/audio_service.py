@@ -46,12 +46,37 @@ class AudioService:
         if search_results:
              transaction_context = "\n".join([f"- {tx['date']}: {tx['merchant']} for ${tx['amount']} ({tx['category']}) - {tx['description']}" for tx in search_results])
 
+        # --- NEW: Mock Intent Detection for Bill Pay ---
+        # Very simple keyword matching for demo purposes
+        intent_response = ""
+        normalized_text = recognized_text.lower()
+        if "pay" in normalized_text and ("credit" in normalized_text or "bill" in normalized_text):
+            # Simulate payment logic
+            amount_to_pay = 0
+            if "balance" in normalized_text or "full" in normalized_text:
+                # Find credit card balance
+                if user_profile and user_profile.get("credit_cards"):
+                    amount_to_pay = user_profile["credit_cards"][0]["current_balance"]
+            else:
+                 # Try to extract a number, simple fallback
+                 import re
+                 numbers = re.findall(r'\d+', normalized_text)
+                 if numbers:
+                     amount_to_pay = int(numbers[0])
+                 else:
+                     amount_to_pay = 250 # Default demo amount
+            
+            intent_response = f" [ACTION: I have initiated a payment of ${amount_to_pay} to your {user_profile.get('credit_cards', [{'name': 'Credit Card'}])[0]['name']}.]"
+
         full_context = f"""
         === USER PROFILE ===
         {profile_context}
         
         === RELEVANT TRANSACTIONS ===
         {transaction_context}
+
+        === SYSTEM ACTION ===
+        {intent_response}
         """
 
         print(f"📄 [DATA] Full Context:\n{full_context}")
