@@ -40,6 +40,24 @@ MOCK_USERS = [
                 "current_balance": 1173.54,
                 "due_date": datetime(2025, 10, 25)
             }
+        ],
+        "bills": [
+            {
+                 "bill_id": "bill_hydro_oct",
+                 "merchant": "Hydro One",
+                 "amount": 145.20,
+                 "due_date": datetime(2025, 10, 30),
+                 "status": "Unpaid",
+                 "category": "Utilities"
+            },
+            {
+                 "bill_id": "bill_rent_nov",
+                 "merchant": "Landlord Corp",
+                 "amount": 1200.00,
+                 "due_date": datetime(2025, 11, 1),
+                 "status": "Unpaid",
+                 "category": "Rent"
+            }
         ]
     },
     {

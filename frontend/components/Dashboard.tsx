@@ -2,7 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { CreditCard, DollarSign, Activity, TrendingUp, Loader2, ShieldCheck } from 'lucide-react';
+import { CreditCard, DollarSign, Activity, TrendingUp, Loader2, ShieldCheck, BrainCircuit, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { AnimatedCounter } from './AnimatedCounter';
 
 interface DashboardProps {
     userId: string;
@@ -19,15 +20,22 @@ const getCreditStatus = (score: number) => {
 
 export default function Dashboard({ userId }: DashboardProps) {
     const [stats, setStats] = useState<any>(null);
+    const [suggestions, setSuggestions] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [executingId, setExecutingId] = useState<string | null>(null);
     const [recentUpdates, setRecentUpdates] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                // Fetch Initial User Profile
-                const userRes = await axios.get(`http://localhost:8000/api/v1/users/${userId}`);
+                // Fetch Initial User Profile and Suggestions
+                const [userRes, suggRes] = await Promise.all([
+                    axios.get(`http://localhost:8000/api/v1/users/${userId}`),
+                    axios.get(`http://localhost:8000/api/v1/agent/suggestions/${userId}`)
+                ]);
+
                 setStats(userRes.data);
+                setSuggestions(suggRes.data);
             } catch (error) {
                 console.error("Failed to fetch dashboard data", error);
             } finally {
@@ -56,10 +64,36 @@ export default function Dashboard({ userId }: DashboardProps) {
                     ...prev,
                     total_balance: data.new_balance
                 }));
+            }
 
-                if (data.latest_transaction) {
-                    setRecentUpdates(prev => [data.latest_transaction, ...prev].slice(0, 5));
-                }
+            if (data.type === "full_state_update") {
+                setStats((prev: any) => {
+                    // 1. Update matching accounts
+                    const updatedAccounts = prev.accounts.map((acc: any) => {
+                        const update = data.updated_accounts?.find((u: any) => u.account_id === acc.account_id);
+                        return update ? update : acc;
+                    });
+
+                    // 2. Update matching credit cards
+                    const updatedCards = prev.credit_cards?.map((card: any) => {
+                        const update = data.updated_credit_cards?.find((u: any) => u.card_id === card.card_id);
+                        return update ? update : card;
+                    });
+
+                    // 3. Add new transaction
+                    let newTxs = prev.recent_transactions || [];
+                    if (data.latest_transaction) {
+                        newTxs = [data.latest_transaction, ...newTxs].slice(0, 5);
+                    }
+
+                    return {
+                        ...prev,
+                        total_balance: data.new_total_balance !== undefined ? data.new_total_balance : data.new_balance,
+                        accounts: updatedAccounts,
+                        credit_cards: updatedCards,
+                        recent_transactions: newTxs
+                    };
+                });
             }
         };
 
@@ -69,15 +103,24 @@ export default function Dashboard({ userId }: DashboardProps) {
         };
     }, [userId]);
 
-    // Demo Function to simulate a transaction (can be triggered by a button later if needed)
-    const simulateTransaction = () => {
-        // This is just client-side trigger to test the socket, 
-        // in real app this happens via POS system -> Backend
-        const ws = new WebSocket(`ws://localhost:8000/api/v1/realtime/ws/dashboard/${userId}`);
-        ws.onopen = () => {
-            ws.send(JSON.stringify({ type: "simulate_transaction" }));
-            ws.close();
-        };
+    const handleAgentAction = async (suggestion: any) => {
+        setExecutingId(suggestion.id);
+        try {
+            const res = await axios.post('http://localhost:8000/api/v1/agent/execute', {
+                user_id: userId,
+                action: suggestion
+            });
+
+            if (res.data.status === "success") {
+                // Remove the executed suggestion
+                setSuggestions(prev => prev.filter(s => s.id !== suggestion.id));
+                // Add success toast or feedback if needed, but the UI change is feedback enough
+            }
+        } catch (error) {
+            console.error("Agent execution failed", error);
+        } finally {
+            setExecutingId(null);
+        }
     };
 
     if (loading) return <div className="flex justify-center p-10"><Loader2 className="animate-spin text-cyan-500 w-10 h-10" /></div>;
@@ -85,6 +128,56 @@ export default function Dashboard({ userId }: DashboardProps) {
 
     return (
         <div className="space-y-8 font-chakra">
+
+            {/* AGENTIC SUGGESTIONS (Neon Yellow) */}
+            {suggestions.length > 0 && (
+                <div className="animate-in slide-in-from-top-4 duration-500">
+                    <div className="bg-yellow-950/10 border border-yellow-400/50 rounded-3xl p-6 relative overflow-hidden shadow-[0_0_20px_rgba(250,204,21,0.15)] group">
+                        {/* Background Effect */}
+                        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 blur-[50px] rounded-full"></div>
+
+                        <div className="relative z-10">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 bg-yellow-400/10 rounded-lg border border-yellow-400/30">
+                                    <BrainCircuit className="w-5 h-5 text-yellow-400 animate-pulse" />
+                                </div>
+                                <h3 className="text-sm font-bold uppercase tracking-widest text-yellow-400">
+                                    Neuro-Agent Suggestions
+                                </h3>
+                                <span className="text-[10px] bg-yellow-400/10 text-yellow-200 px-2 py-0.5 rounded border border-yellow-400/20">
+                                    {suggestions.length} ACTIONABLE
+                                </span>
+                            </div>
+
+                            <div className="space-y-3">
+                                {suggestions.map((suggestion) => (
+                                    <div key={suggestion.id} className="bg-black/40 border border-yellow-400/20 rounded-xl p-4 flex items-center justify-between hover:border-yellow-400/50 transition-all hover:bg-yellow-900/10 group/item">
+                                        <div>
+                                            <div className="text-white font-bold text-sm mb-1">{suggestion.title}</div>
+                                            <div className="text-yellow-200/60 text-xs font-mono">{suggestion.description}</div>
+                                        </div>
+                                        <button
+                                            onClick={() => handleAgentAction(suggestion)}
+                                            disabled={executingId === suggestion.id}
+                                            className="bg-yellow-400 text-black px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-yellow-300 hover:shadow-[0_0_15px_rgba(250,204,21,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed min-w-[100px] justify-center"
+                                        >
+                                            {executingId === suggestion.id ? (
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                            ) : (
+                                                <>
+                                                    Execute <ArrowRight className="w-3 h-3 group-hover/item:translate-x-1 transition-transform" />
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-6">
                 <div className="bg-cyan-950/20 p-7 rounded-3xl border border-cyan-500/20 shadow-[0_0_15px_rgba(6,182,212,0.05)] backdrop-blur-md transition-all hover:bg-cyan-900/30 hover:border-cyan-400/30 group">
@@ -92,8 +185,8 @@ export default function Dashboard({ userId }: DashboardProps) {
                         <DollarSign className="w-5 h-5 text-cyan-400 group-hover:rotate-12 transition-transform" />
                         <span>Total Balance</span>
                     </div>
-                    <div className="text-3xl font-bold text-white tracking-tight tabular-nums mt-1">
-                        ${stats.total_balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    <div className="mt-1">
+                        <AnimatedCounter value={stats.total_balance} className="text-3xl font-bold text-white" />
                     </div>
                     <div className="text-[10px] text-cyan-500/50 mt-3 font-mono tracking-widest flex items-center gap-1">
                         <span className="w-1.5 h-1.5 bg-cyan-500 rounded-full animate-pulse"></span>
@@ -157,8 +250,8 @@ export default function Dashboard({ userId }: DashboardProps) {
                                         <div className={`w-1.5 h-1.5 rounded-full ${dotClass}`}></div>
                                         {account.type} Account
                                     </div>
-                                    <div className="text-2xl font-bold text-white tracking-tight tabular-nums">
-                                        ${account.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                    <div>
+                                        <AnimatedCounter value={account.balance} className="text-2xl font-bold text-white" />
                                     </div>
                                     {account.type === 'Investment' && (
                                         <div className="text-[10px] text-white/50 mt-1">{account.holdings}</div>
@@ -203,11 +296,11 @@ export default function Dashboard({ userId }: DashboardProps) {
                                     <div className="flex justify-between gap-2">
                                         <div className="min-w-0">
                                             <div className="text-[9px] text-white/50 uppercase tracking-wider mb-0.5 truncate">Current Balance</div>
-                                            <div className="text-base font-bold text-white tabular-nums tracking-tight">${card.current_balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                                            <AnimatedCounter value={card.current_balance} className="text-base font-bold text-white" />
                                         </div>
                                         <div className="text-right min-w-0">
                                             <div className="text-[9px] text-white/50 uppercase tracking-wider mb-0.5 truncate">Available Credit</div>
-                                            <div className="text-base font-bold text-emerald-400 tabular-nums tracking-tight">${availableCredit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                                            <AnimatedCounter value={availableCredit} className="text-base font-bold text-emerald-400" />
                                         </div>
                                     </div>
 

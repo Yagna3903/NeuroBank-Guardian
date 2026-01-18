@@ -13,12 +13,45 @@ class AudioService:
         self.speech_region = settings.AZURE_SPEECH_REGION
         # Initialize OpenAI
         self.llm = ChatOpenAI(model="gpt-4o", openai_api_key=settings.OPENAI_API_KEY, temperature=0)
+        self.pending_confirmations = {} # Stores pending actions waiting for "YES AI"
 
     async def process_audio_intent(self, user_id: str, recognized_text: str):
         """
         Takes recognized text, searches the vault, and returns a SMART response using Gemini.
         """
         print(f"\n🎤 [USER] input: '{recognized_text}'")
+        
+        # --- PHASE 0: HANDLE PENDING CONFIRMATIONS (YES AI) ---
+        from services.agent_service import AgentService 
+
+        if user_id in self.pending_confirmations:
+            pending_action = self.pending_confirmations[user_id]
+            # Normalize: lower case -> remove punctuation
+            norm_text = recognized_text.lower().replace('.', '').replace(',', '').strip()
+            
+            # Flexible "YES AI" check handling punctuation variants like "Yes, A.I."
+            if "yes ai" in norm_text:
+                # EXECUTE
+                print(f"🚀 [AGENT] User Confirmed. Executing: {pending_action['title']}")
+                execution_result = await AgentService.execute_action(user_id, pending_action)
+                del self.pending_confirmations[user_id] # Clear state
+                
+                if execution_result['status'] == 'success':
+                    return f"Authentication confirmed. Payment of ${pending_action['amount']} to {pending_action.get('merchant', 'merchant')} is successful. Your updated balance is ${execution_result['new_balance']}."
+                else:
+                    return f"System Error: {execution_result.get('message', 'Could not complete transaction')}."
+            
+            elif "no" in norm_text or "cancel" in norm_text:
+                del self.pending_confirmations[user_id]
+                return "Understood. The transaction has been cancelled. Is there anything else I can help you with?"
+            
+            else:
+                # If they say something else, remind them or treat as cancel?
+                # For safety, let's treat non-confirmation as "Still waiting" or "Cancel". 
+                # Let's simple return a prompt to be clear.
+                return "I am waiting for your authorization. Please say 'YES AI' to confirm this transaction, or 'Cancel' to stop."
+        
+        # --- NORMAL FLOW ---
         print(f"🔍 [SYSTEM] Fetching context for User: {user_id}...")
         
         # 1. Fetch User Profile (Balance, Accounts, Name)
@@ -39,34 +72,90 @@ class AudioService:
         # 2. Search Vector Vault (Transactions)
         search_results = self.transaction_service.search_transactions(recognized_text, user_id=user_id)
         
-        print(f"✅ [SYSTEM] Found Profile + {len(search_results)} relevant transactions.")
-        
         # 3. Prepare Context for AI
         transaction_context = "No specific transactions found."
         if search_results:
              transaction_context = "\n".join([f"- {tx['date']}: {tx['merchant']} for ${tx['amount']} ({tx['category']}) - {tx['description']}" for tx in search_results])
 
-        # --- NEW: Mock Intent Detection for Bill Pay ---
-        # Very simple keyword matching for demo purposes
+        # --- NEW: ACTIVE AGENTIC INTENT EXECUTION ---
         intent_response = ""
         normalized_text = recognized_text.lower()
-        if "pay" in normalized_text and ("credit" in normalized_text or "bill" in normalized_text):
-            # Simulate payment logic
+        
+        # Trigger: "pay" AND ("credit" OR "visa" OR "bill" OR "hydro" OR "rent")
+        if "pay" in normalized_text or "transfer" in normalized_text or "send" in normalized_text:
+            action_payload = None
             amount_to_pay = 0
-            if "balance" in normalized_text or "full" in normalized_text:
-                # Find credit card balance
-                if user_profile and user_profile.get("credit_cards"):
-                    amount_to_pay = user_profile["credit_cards"][0]["current_balance"]
-            else:
-                 # Try to extract a number, simple fallback
-                 import re
-                 numbers = re.findall(r'\d+', normalized_text)
-                 if numbers:
-                     amount_to_pay = int(numbers[0])
-                 else:
-                     amount_to_pay = 250 # Default demo amount
+            target_name = ""
             
-            intent_response = f" [ACTION: I have initiated a payment of ${amount_to_pay} to your {user_profile.get('credit_cards', [{'name': 'Credit Card'}])[0]['name']}.]"
+            # Extract Amount
+            import re
+            numbers = re.findall(r'\d+', normalized_text)
+            if numbers:
+                amount_to_pay = float(numbers[0])
+            # Default "full balance" or "all" logic
+            if "balance" in normalized_text or "full" in normalized_text or "entire" in normalized_text or "amount" in normalized_text or "all" in normalized_text:
+                 pass
+            else:
+                if not numbers: 
+                    amount_to_pay = 100.0 # Default if no number
+            
+            # 1. PAY INTENTS
+            if "pay" in normalized_text:
+                if "credit" in normalized_text or "visa" in normalized_text:
+                     if user_profile and user_profile.get("credit_cards"):
+                         card = user_profile["credit_cards"][0]
+                         if amount_to_pay == 0: 
+                             amount_to_pay = card["current_balance"]
+                         
+                         target_name = card["name"]
+                         action_payload = {
+                             "type": "PAY_CC",
+                             "amount": amount_to_pay,
+                             "card_id": card["card_id"],
+                             "title": f"Voice Payment to {card['name']}",
+                             "merchant": "Credit Card Payment"
+                         }
+
+                elif "bill" in normalized_text or "hydro" in normalized_text or "rent" in normalized_text:
+                     merchant = "Hydro One"
+                     bill_id = "bill_hydro_oct" 
+                     if "rent" in normalized_text:
+                         merchant = "Landlord Corp"
+                         bill_id = "bill_rent_nov"
+                     
+                     target_name = merchant
+                     action_payload = {
+                         "type": "PAY_BILL",
+                         "amount": amount_to_pay if amount_to_pay > 0 else 150.0,
+                         "bill_id": bill_id,
+                         "merchant": merchant,
+                         "title": f"Voice Payment to {merchant}"
+                     }
+
+            # 2. TRANSFER INTENTS
+            elif "transfer" in normalized_text or "send" in normalized_text:
+                target_type = "Savings" # Default destination
+                if "chequing" in normalized_text or "checking" in normalized_text:
+                    target_type = "Chequing"
+                
+                target_name = f"{target_type} Account"
+                
+                action_payload = {
+                    "type": "TRANSFER",
+                    "amount": amount_to_pay,
+                    "to_account_type": target_type,
+                    "title": f"Transfer to {target_name}",
+                    "merchant": "Internal Transfer"
+                }
+
+            # INSTEAD OF EXECUTING, WE REQUEST AUTHENTICATION
+            if action_payload:
+                print(f"🔒 [AGENT] Requiring Confirmation for: {action_payload['title']}")
+                self.pending_confirmations[user_id] = action_payload
+                
+                intent_response = f"[SYSTEM: I have prepared the transaction. ASK THE USER: 'I can process a {action_payload.get('title')} of ${action_payload['amount']}. To confirm, please say YES AI.']"
+
+
 
         full_context = f"""
         === USER PROFILE ===
