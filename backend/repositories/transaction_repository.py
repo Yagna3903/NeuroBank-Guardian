@@ -42,3 +42,10 @@ class TransactionRepository:
             }
         ]
         return list(self.collection.aggregate(pipeline))
+
+    def get_recent_transactions(self, user_id: str, limit: int = 10) -> List[Dict[str, Any]]:
+        """Fetches recent transactions sorted by date."""
+        return list(self.collection.find(
+            {"user_id": user_id},
+            {"_id": 0, "embedding": 0}
+        ).sort("date", -1).limit(limit))
