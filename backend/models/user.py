@@ -7,6 +7,8 @@ class Account(BaseModel):
     type: str  # e.g., "Chequing", "Savings"
     balance: float
     currency: str = "CAD"
+    interest_rate: Optional[float] = None
+    holdings: Optional[str] = None
 
 class Loan(BaseModel):
     loan_id: str
@@ -18,6 +20,7 @@ class Loan(BaseModel):
 
 class CreditCard(BaseModel):
     card_id: str
+    name: str = "Credit Card"
     limit: float
     current_balance: float
     due_date: datetime
@@ -28,6 +31,7 @@ class User(BaseModel):
     email: str
     phone: str
     risk_score: int  # 0-100, where 100 is safe
+    credit_score: Optional[int] = None # Added field
     accounts: List[Account] = []
     loans: List[Loan] = []
     credit_cards: List[CreditCard] = []
