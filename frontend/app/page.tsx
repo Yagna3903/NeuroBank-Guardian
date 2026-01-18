@@ -109,8 +109,29 @@ export default function Home() {
               >
                 {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Request Access Code <ArrowRight className="w-5 h-5" /></>}
               </button>
-              <div className="text-center pt-2">
+              <div className="text-center pt-4 space-y-3">
                 <p className="text-sm text-blue-200/60">Try: <b className="text-blue-200">om@neurobank.ai</b> or <b className="text-blue-200">yagna@neurobank.ai</b></p>
+                <div className="relative flex py-2 items-center">
+                  <div className="grow border-t border-white/10"></div>
+                  <span className="shrink-0 mx-4 text-white/30 text-xs uppercase tracking-widest">Hackathon Access</span>
+                  <div className="grow border-t border-white/10"></div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoading(true);
+                    setTimeout(() => {
+                      setUserId("user_002");
+                      setUserName("Yagna Patel");
+                      setCurrentStep("dashboard");
+                      setLoading(false);
+                    }, 1500);
+                  }}
+                  className="w-full h-12 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-cyan-500/50 text-cyan-200 text-sm font-bold rounded-xl transition-all flex items-center justify-center gap-2 group"
+                >
+                  <User className="w-4 h-4 text-cyan-400 group-hover:drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+                  Enter Demo Mode (Judge Access)
+                </button>
               </div>
             </form>
           )}
@@ -173,7 +194,7 @@ export default function Home() {
                 <h1 className="text-3xl font-bold text-white mb-1 tracking-wide">Welcome back, {userName}</h1>
                 <p className="text-sm text-emerald-300 font-mono flex items-center gap-2 font-bold tracking-wider">
                   <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]"></span>
-                  SECURE SESSION ACTIVE
+                  SECURE SESSION ACTIVE {userId === "user_002" && "(DEMO MODE)"}
                 </p>
               </div>
             </div>

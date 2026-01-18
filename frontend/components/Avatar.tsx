@@ -54,8 +54,10 @@ export default function Avatar({ userId }: AvatarProps) {
 
         setStatus("Initializing...");
         try {
-            // HARDCODED PRODUCTION URL
+            // FORCE PRODUCTION URL
             const apiUrl = "https://backend-1093567910779.us-central1.run.app";
+            console.log("Connecting to Avatar Session at:", apiUrl);
+
             const response = await axios.post(`${apiUrl}/api/v1/avatar/session`);
             const { token, ice_servers, region } = response.data;
 
@@ -108,7 +110,7 @@ export default function Avatar({ userId }: AvatarProps) {
             websocketRef.current.close();
         }
 
-        // HARDCODED PRODUCTION WS URL
+        // FORCE PRODUCTION WS URL
         const wsUrl = "wss://backend-1093567910779.us-central1.run.app";
         const ws = new WebSocket(`${wsUrl}/api/v1/avatar/ws?user_id=${uid}`);
 
