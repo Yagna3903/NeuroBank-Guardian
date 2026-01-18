@@ -52,86 +52,86 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[conic-gradient(at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-purple-900 to-slate-900 text-white font-sans">
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0a0a1a] to-black text-white font-sans overflow-hidden">
 
       {/* Background Ambience */}
       <div className="absolute inset-0 pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
 
       {currentStep !== "dashboard" ? (
-        <div className="relative z-10 w-full max-w-md p-8 bg-black/40 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl">
+        <div className="relative z-10 w-full max-w-lg p-10 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl border-t border-l border-white/20 rounded-[2rem] shadow-2xl shadow-black/50">
 
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto bg-gradient-to-tr from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg shadow-purple-500/20 mb-4">
-              <ShieldCheck className="w-8 h-8 text-white" />
+          <div className="text-center mb-10">
+            <div className="w-20 h-20 mx-auto bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-3xl flex items-center justify-center shadow-lg shadow-blue-500/30 mb-6">
+              <ShieldCheck className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-2xl font-bold tracking-tight">NeuroBank Guardian</h1>
-            <p className="text-gray-400 text-sm mt-1">Next-Gen Secure Access</p>
+            <h1 className="text-3xl font-bold tracking-tight text-white mb-2">NeuroBank Guardian</h1>
+            <p className="text-blue-200 text-base font-medium">Next-Gen Secure Neural Access</p>
           </div>
 
           {/* ERROR MSG */}
           {error && (
-            <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-xs text-center">
+            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-100 text-sm text-center font-medium shadow-lg">
               {error}
             </div>
           )}
 
           {/* STEP 1: EMAIL */}
           {currentStep === "email" && (
-            <form onSubmit={handleRequestOTP} className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider font-bold text-gray-500 ml-1">Identity Claim</label>
+            <form onSubmit={handleRequestOTP} className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="space-y-3">
+                <label className="text-sm uppercase tracking-wider font-bold text-blue-300 ml-1">Identity Claim</label>
                 <div className="relative group">
-                  <Mail className="absolute left-4 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-blue-400 transition-colors" />
+                  <Mail className="absolute left-5 top-5 w-6 h-6 text-blue-300 group-focus-within:text-cyan-300 transition-colors" />
                   <input
                     type="email"
                     placeholder="Enter your email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all font-medium placeholder:text-gray-600"
+                    className="w-full h-16 bg-black/20 border border-white/10 rounded-2xl pl-14 pr-6 text-xl text-white focus:outline-none focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/50 transition-all font-medium placeholder:text-white/30"
                   />
                 </div>
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-black font-bold py-3.5 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                className="w-full h-16 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-lg font-bold rounded-full hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-lg shadow-cyan-500/20"
               >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Request Access Code <ArrowRight className="w-4 h-4" /></>}
+                {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Request Access Code <ArrowRight className="w-5 h-5" /></>}
               </button>
-              <div className="text-center">
-                <p className="text-[10px] text-gray-500">Try: <b>om@neurobank.ai</b> or <b>yagna@neurobank.ai</b></p>
+              <div className="text-center pt-2">
+                <p className="text-sm text-blue-200/60">Try: <b className="text-blue-200">om@neurobank.ai</b> or <b className="text-blue-200">yagna@neurobank.ai</b></p>
               </div>
             </form>
           )}
 
           {/* STEP 2: OTP */}
           {currentStep === "otp" && (
-            <form onSubmit={handleVerifyOTP} className="space-y-4 animate-in fade-in slide-in-from-right-8 duration-500">
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-wider font-bold text-gray-500 ml-1">Security Code</label>
+            <form onSubmit={handleVerifyOTP} className="space-y-6 animate-in fade-in slide-in-from-right-8 duration-500">
+              <div className="space-y-3">
+                <label className="text-sm uppercase tracking-wider font-bold text-emerald-300 ml-1">Security Code</label>
                 <div className="relative group">
-                  <KeyRound className="absolute left-4 top-3.5 w-5 h-5 text-gray-500 group-focus-within:text-green-400 transition-colors" />
+                  <KeyRound className="absolute left-5 top-5 w-6 h-6 text-emerald-300 group-focus-within:text-emerald-200 transition-colors" />
                   <input
                     type="text"
-                    placeholder="Unknown Code"
+                    placeholder="000000"
                     maxLength={6}
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     required
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white tracking-[0.5em] text-center font-mono text-lg focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all placeholder:tracking-normal placeholder:text-gray-600 placeholder:font-sans placeholder:text-sm"
+                    className="w-full h-16 bg-black/20 border border-white/10 rounded-2xl pl-14 pr-6 text-white tracking-[0.5em] text-center font-mono text-2xl focus:outline-none focus:ring-2 focus:ring-emerald-400/50 focus:border-emerald-400/50 transition-all placeholder:tracking-normal placeholder:text-white/20 placeholder:font-sans placeholder:text-base"
                   />
                 </div>
               </div>
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold py-3.5 rounded-xl hover:shadow-lg hover:shadow-blue-500/25 transition-all flex items-center justify-center gap-2"
+                className="w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-lg font-bold rounded-full hover:shadow-lg hover:shadow-emerald-500/25 transition-all flex items-center justify-center gap-3"
               >
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Verify Identity <ShieldCheck className="w-4 h-4" /></>}
+                {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Verify Identity <ShieldCheck className="w-5 h-5" /></>}
               </button>
-              <button type="button" onClick={() => setCurrentStep("email")} className="w-full text-xs text-gray-500 hover:text-white transition-colors">
+              <button type="button" onClick={() => setCurrentStep("email")} className="w-full text-sm text-blue-300 hover:text-white transition-colors underline decoration-blue-300/30 underline-offset-4">
                 Try different email
               </button>
             </form>
@@ -139,48 +139,48 @@ export default function Home() {
 
           {/* STEP 3: BIOMETRIC ANIMATION */}
           {currentStep === "biometric" && (
-            <div className="flex flex-col items-center justify-center py-8 animate-in zoom-in duration-500">
-              <div className="relative w-24 h-24 mb-6">
-                <div className="absolute inset-0 border-4 border-blue-500/30 rounded-full animate-ping"></div>
-                <div className="absolute inset-0 border-4 border-t-blue-500 border-r-transparent border-b-purple-500 border-l-transparent rounded-full animate-spin"></div>
+            <div className="flex flex-col items-center justify-center py-10 animate-in zoom-in duration-500">
+              <div className="relative w-32 h-32 mb-10">
+                <div className="absolute inset-0 border-[6px] border-cyan-500/30 rounded-full animate-ping"></div>
+                <div className="absolute inset-0 border-[6px] border-t-cyan-400 border-r-transparent border-b-blue-500 border-l-transparent rounded-full animate-spin"></div>
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <Fingerprint className="w-10 h-10 text-blue-400 animate-pulse" />
+                  <Fingerprint className="w-14 h-14 text-cyan-300 animate-pulse" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">Verifying Biometrics...</h3>
-              <p className="text-gray-500 text-sm mt-2">Creating secure neural link...</p>
+              <h3 className="text-3xl font-bold text-white mb-2 text-center">Verifying Biometrics...</h3>
+              <p className="text-blue-200 text-lg text-center animate-pulse">Establishing secure neural link</p>
             </div>
           )}
         </div>
       ) : (
         // DASHBOARD VIEW
         <div className="relative z-10 w-full max-w-7xl animate-in fade-in duration-1000">
-          <header className="flex justify-between items-center mb-8 border-b border-white/10 pb-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
-                <User className="w-6 h-6 text-white" />
+          <header className="flex justify-between items-center mb-10 border-b border-white/10 pb-8 bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-lg shadow-black/20">
+            <div className="flex items-center gap-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center border border-white/20 shadow-lg shadow-cyan-500/30">
+                <User className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold">Welcome back, {userName}</h1>
-                <p className="text-xs text-green-400 font-mono flex items-center gap-2">
-                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                <h1 className="text-3xl font-bold text-white mb-1">Welcome back, {userName}</h1>
+                <p className="text-sm text-emerald-300 font-mono flex items-center gap-2 font-bold tracking-wider">
+                  <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]"></span>
                   SECURE SESSION ACTIVE
                 </p>
               </div>
             </div>
-            <button onClick={() => window.location.reload()} className="bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-lg text-sm transition-colors">
+            <button onClick={() => window.location.reload()} className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 px-6 py-3 rounded-xl text-red-200 text-sm font-bold transition-all shadow-lg hover:scale-105 active:scale-95">
               Sign Out
             </button>
           </header>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Column: Avatar Interaction */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="lg:col-span-2 space-y-8">
               <Avatar userId={userId || "user_001"} />
             </div>
 
             {/* Right Column: Banking Details */}
-            <div className="space-y-6">
+            <div className="space-y-8">
               <Dashboard userId={userId || "user_001"} />
             </div>
           </div>
