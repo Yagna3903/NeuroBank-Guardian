@@ -1,3 +1,5 @@
+images:
+  - 'gcr.io/$PROJECT_ID/frontend'
 steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: [
@@ -8,7 +10,18 @@ steps:
       'gcr.io/$PROJECT_ID/frontend', 
       '.'
     ]
-images:
-  - 'gcr.io/$PROJECT_ID/frontend'
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'frontend'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/frontend'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
 substitutions:
-  _API_URL: 'http://localhost:8000' # Default fallback
+  _API_URL: 'https://backend-1093567910779.us-central1.run.app' # Production URL Default
