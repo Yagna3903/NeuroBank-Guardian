@@ -133,6 +133,12 @@ export default function Dashboard({ userId }: DashboardProps) {
             {suggestions.length > 0 && (
                 <div className="animate-in slide-in-from-top-4 duration-500">
                     <div className="bg-yellow-950/10 border border-yellow-400/50 rounded-3xl p-6 relative overflow-hidden shadow-[0_0_20px_rgba(250,204,21,0.15)] group">
+                        <style>{`
+                            @keyframes marquee {
+                                0% { transform: translateX(0); }
+                                100% { transform: translateX(-50%); } 
+                            }
+                        `}</style>
                         {/* Background Effect */}
                         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
                         <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-500/10 blur-[50px] rounded-full"></div>
@@ -145,33 +151,51 @@ export default function Dashboard({ userId }: DashboardProps) {
                                 <h3 className="text-sm font-bold uppercase tracking-widest text-yellow-400">
                                     Neuro-Agent Suggestions
                                 </h3>
-                                <span className="text-[10px] bg-yellow-400/10 text-yellow-200 px-2 py-0.5 rounded border border-yellow-400/20">
-                                    {suggestions.length} ACTIONABLE
-                                </span>
+                                <div className="flex gap-2">
+                                    <span className="text-[10px] bg-yellow-400/10 text-yellow-200 px-2 py-0.5 rounded border border-yellow-400/20 flex items-center gap-1">
+                                        <Activity className="w-3 h-3 animate-pulse" /> LIVE FEED
+                                    </span>
+                                </div>
                             </div>
 
-                            <div className="space-y-3">
-                                {suggestions.map((suggestion) => (
-                                    <div key={suggestion.id} className="bg-black/40 border border-yellow-400/20 rounded-xl p-4 flex items-center justify-between hover:border-yellow-400/50 transition-all hover:bg-yellow-900/10 group/item">
-                                        <div>
-                                            <div className="text-white font-bold text-sm mb-1">{suggestion.title}</div>
-                                            <div className="text-yellow-200/60 text-xs font-mono">{suggestion.description}</div>
+                            {/* Marquee Container */}
+                            <div className="relative w-full overflow-hidden">
+                                {/* Gradient Masks */}
+                                <div className="absolute left-0 top-0 bottom-0 w-10 z-20 bg-gradient-to-r from-black to-transparent pointer-events-none"></div>
+                                <div className="absolute right-0 top-0 bottom-0 w-10 z-20 bg-gradient-to-l from-black to-transparent pointer-events-none"></div>
+
+                                <div className="flex w-max gap-4 hover:[animation-play-state:paused]"
+                                    style={{ animation: 'marquee 30s linear infinite' }}>
+
+                                    {/* Repeat list multiple times to loop seamlessly. 
+                                        Since we translate -50%, we need 2 sets coverage. 
+                                        If suggestions is small, we replicate more. */}
+                                    {[...suggestions, ...suggestions, ...suggestions, ...suggestions].map((suggestion, idx) => (
+                                        <div key={`${suggestion.id}-${idx}`} className="w-[280px] shrink-0 bg-black/40 border border-yellow-400/20 rounded-xl p-4 flex flex-col gap-3 hover:border-yellow-400/50 transition-all hover:bg-yellow-900/10 group/item backdrop-blur-sm">
+                                            <div className="flex justify-between items-start h-[50px]">
+                                                <div>
+                                                    <div className="text-white font-bold text-sm mb-1 leading-tight">{suggestion.title}</div>
+                                                    <div className="text-yellow-200/60 text-[10px] font-mono leading-tight">{suggestion.description}</div>
+                                                </div>
+                                            </div>
+                                            <div className="mt-auto">
+                                                <button
+                                                    onClick={() => handleAgentAction(suggestion)}
+                                                    disabled={executingId === suggestion.id}
+                                                    className="w-full bg-yellow-400 text-black px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-yellow-300 hover:shadow-[0_0_15px_rgba(250,204,21,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    {executingId === suggestion.id ? (
+                                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                                    ) : (
+                                                        <>
+                                                            Execute <ArrowRight className="w-3 h-3 group-hover/item:translate-x-1 transition-transform" />
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
                                         </div>
-                                        <button
-                                            onClick={() => handleAgentAction(suggestion)}
-                                            disabled={executingId === suggestion.id}
-                                            className="bg-yellow-400 text-black px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-2 hover:bg-yellow-300 hover:shadow-[0_0_15px_rgba(250,204,21,0.4)] transition-all disabled:opacity-50 disabled:cursor-not-allowed min-w-[100px] justify-center"
-                                        >
-                                            {executingId === suggestion.id ? (
-                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                            ) : (
-                                                <>
-                                                    Execute <ArrowRight className="w-3 h-3 group-hover/item:translate-x-1 transition-transform" />
-                                                </>
-                                            )}
-                                        </button>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>
