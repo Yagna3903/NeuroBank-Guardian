@@ -31,11 +31,17 @@ app.include_router(user_router, prefix="/api/v1")
 
 @app.on_event("startup")
 async def startup_event():
-    Database.connect()
+    try:
+        Database.connect()
+    except Exception as e:
+        print(f"⚠️ Initial Database Connection Failed: {e}")
 
 @app.on_event("shutdown")
 async def shutdown_event():
-    Database.close()
+    try:
+        Database.close()
+    except Exception:
+        pass
 
 @app.get("/")
 async def root():
