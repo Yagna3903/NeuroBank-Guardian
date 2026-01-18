@@ -22,5 +22,6 @@ COPY . .
 EXPOSE 8080
 
 # Command to run the application
-# We use port 8080 as expected by Google Cloud Run
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Command to run the application
+# Use shell form to allow variable expansion of $PORT
+CMD uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
