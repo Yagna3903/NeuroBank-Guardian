@@ -70,13 +70,22 @@ export const AnimatedCounter: React.FC<AnimatedCounterProps> = ({
     }, [value, duration]);
 
     // Dynamic coloring based on state
-    let colorClass = "text-white";
-    // We override specific colors if active, otherwise fallback to passed className or white
-    if (colorState === 'up') colorClass = "text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.8)]";
-    if (colorState === 'down') colorClass = "text-red-500 drop-shadow-[0_0_10px_rgba(239,68,68,0.8)]";
+    // Dynamic coloring based on state
+    let colorClass = "";
+    let scaleClass = "";
+
+    // We use ! to force override parent text colors during animation
+    if (colorState === 'up') {
+        colorClass = "!text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,1)]";
+        scaleClass = "scale-110 origin-left";
+    }
+    if (colorState === 'down') {
+        colorClass = "!text-red-500 drop-shadow-[0_0_15px_rgba(239,68,68,1)]";
+        scaleClass = "scale-110 origin-left";
+    }
 
     return (
-        <span className={`tabular-nums transition-colors duration-500 ${className} ${colorState !== 'neutral' ? colorClass : ''}`}>
+        <span className={`tabular-nums inline-block transition-all duration-300 ${className} ${colorState !== 'neutral' ? `${colorClass} ${scaleClass}` : ''}`}>
             {currency}{displayValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </span>
     );
