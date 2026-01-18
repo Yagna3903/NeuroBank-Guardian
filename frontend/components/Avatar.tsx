@@ -26,6 +26,9 @@ export default function Avatar({ userId }: AvatarProps) {
     const recognizerRef = useRef<SpeechSDK.SpeechRecognizer | null>(null);
     const websocketRef = useRef<WebSocket | null>(null);
 
+    const isSessionActive = useRef(false);
+    const isSpeakingRef = useRef(false);
+
     // Auto-scroll transcript
     useEffect(() => {
         if (transcriptRef.current) {
@@ -65,7 +68,7 @@ export default function Avatar({ userId }: AvatarProps) {
                     videoRef.current.srcObject = event.streams[0];
                     videoRef.current.play();
                     setIsPlaying(true);
-                    setStatus("Connected");
+                    setStatus("Waiting for 'Hello AI'...");
                 }
             };
 
@@ -103,7 +106,9 @@ export default function Avatar({ userId }: AvatarProps) {
 
                 if (synthesizerRef.current) {
                     setStatus("Speaking...");
+                    isSpeakingRef.current = true;
                     await synthesizerRef.current.speakTextAsync(msg.text);
+                    isSpeakingRef.current = false;
                     setStatus("Listening...");
                 }
             }
@@ -121,13 +126,39 @@ export default function Avatar({ userId }: AvatarProps) {
         const recognizer = new SpeechSDK.SpeechRecognizer(speechConfig, audioConfig);
 
         recognizer.recognizing = (s, e) => {
-            setStatus(`Listening: ${e.result.text}`);
+            // Only show listening status if we are actually active
+            if (isSessionActive.current && !isSpeakingRef.current) {
+                setStatus(`Listening: ${e.result.text}`);
+            }
         };
 
         recognizer.recognized = (s, e) => {
             if (e.result.reason === SpeechSDK.ResultReason.RecognizedSpeech) {
                 const text = e.result.text;
-                if (!text) return; // Ignore empty frames
+                const lowerText = text.toLowerCase();
+
+                if (!text) return;
+
+                // 1. Check for Disconnect
+                if (lowerText.includes("goodbye") || lowerText.includes("good bye")) {
+                    setTranscript(prev => [...prev, { role: 'user', text: text + " (Ending Session)" }]);
+                    stopAvatar();
+                    return;
+                }
+
+                // 2. Check for Wake Word
+                if (lowerText.includes("hello ai") || lowerText.includes("hello a.i")) {
+                    isSessionActive.current = true;
+                    setStatus("Listening...");
+                    setTranscript(prev => [...prev, { role: 'user', text: text + " (Session Activated)" }]);
+                    // Optionally send the first hello to the backend? Or just activate. 
+                    // Let's send it so the AI says hello back.
+                }
+
+                // 3. Voice Isolation & Active Check
+                // If not active, or if avatar is currently speaking, IGNORE input.
+                if (!isSessionActive.current) return;
+                if (isSpeakingRef.current) return;
 
                 setTranscript(prev => [...prev, { role: 'user', text }]);
 
