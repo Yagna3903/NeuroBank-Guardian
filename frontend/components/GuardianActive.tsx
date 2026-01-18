@@ -46,32 +46,32 @@ export default function GuardianActive({ userId }: GuardianActiveProps) {
     };
 
     return (
-        <div className="bg-gradient-to-r from-blue-900/40 via-purple-900/40 to-indigo-900/40 p-10 rounded-3xl border border-white/10 text-white shadow-2xl relative overflow-hidden group w-full">
+        <div className="bg-gradient-to-r from-blue-900/40 via-purple-900/40 to-indigo-900/40 p-6 rounded-3xl border border-white/10 text-white shadow-2xl relative overflow-hidden group w-full">
             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 mix-blend-overlay"></div>
 
             <div className="flex flex-col md:flex-row justify-between items-start gap-8 relative z-10">
                 {/* Header Section */}
                 <div className="flex-1">
-                    <h3 className="text-3xl font-bold flex items-center gap-4 mb-2">
-                        <ShieldCheck className="w-10 h-10 text-cyan-300" />
+                    <h3 className="text-xl font-bold flex items-center gap-4 mb-2">
+                        <ShieldCheck className="w-6 h-6 text-cyan-300" />
                         Guardian Active
                     </h3>
-                    <p className="text-blue-200/70 text-lg max-w-xl leading-relaxed">
+                    <p className="text-blue-200/70 text-sm max-w-xl leading-relaxed">
                         Sentinel system monitoring <b>{accountCount} linked accounts</b>.
                         Neural threat detection and real-time transaction screening are enabled.
                     </p>
 
                     {/* Static Protocols List - Horizontal Grid Now */}
-                    <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div className="flex items-center justify-between text-xs text-white/60 bg-white/5 p-4 rounded-xl border border-white/5">
+                    <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="flex items-center justify-between text-xs text-white/60 bg-white/5 p-3 rounded-lg border border-white/5">
                             <span>Biometric Lock</span>
                             <span className="text-emerald-400 font-mono font-bold">ENGAGED</span>
                         </div>
-                        <div className="flex items-center justify-between text-xs text-white/60 bg-white/5 p-4 rounded-xl border border-white/5">
+                        <div className="flex items-center justify-between text-xs text-white/60 bg-white/5 p-3 rounded-lg border border-white/5">
                             <span>Geo-Fencing</span>
                             <span className="text-emerald-400 font-mono font-bold">ACTIVE</span>
                         </div>
-                        <div className="flex items-center justify-between text-xs text-white/60 bg-white/5 p-4 rounded-xl border border-white/5">
+                        <div className="flex items-center justify-between text-xs text-white/60 bg-white/5 p-3 rounded-lg border border-white/5">
                             <span>Neural Link</span>
                             <span className="text-blue-400 font-mono font-bold">STABLE</span>
                         </div>
