@@ -110,7 +110,7 @@ export default function Home() {
                 {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Request Access Code <ArrowRight className="w-5 h-5" /></>}
               </button>
               <div className="text-center pt-4 space-y-3">
-                <p className="text-sm text-blue-200/60">Try: <b className="text-blue-200">om@neurobank.ai</b> or <b className="text-blue-200">yagna@neurobank.ai</b></p>
+                <p className="text-sm text-blue-200/60">Try: <b className="text-blue-200">yagna3903@gmail.com</b></p>
                 <div className="relative flex py-2 items-center">
                   <div className="grow border-t border-white/10"></div>
                   <span className="shrink-0 mx-4 text-white/30 text-xs uppercase tracking-widest">Hackathon Access</span>
