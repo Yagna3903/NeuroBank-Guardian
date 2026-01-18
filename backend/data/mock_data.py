@@ -43,7 +43,7 @@ MOCK_USERS = [
     {
         "user_id": "user_002",
         "name": "Yagna Patel",
-        "email": "yagna.p@example.com",
+        "email": "yagna3903@gmail.com",
         "phone": "+1-647-555-0199",
         "risk_score": 88,
         "accounts": [
@@ -66,8 +66,8 @@ MOCK_USERS = [
     },
     {
         "user_id": "user_003",
-        "name": "Sarah (Yagna's GF)",
-        "email": "sarah.gf@example.com",
+        "name": "Sarisha",
+        "email": "tn24vy@brocku.ca",
         "phone": "+1-647-555-0200",
         "risk_score": 92,
         "accounts": [
