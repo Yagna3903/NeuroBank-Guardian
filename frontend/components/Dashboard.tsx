@@ -71,17 +71,19 @@ export default function Dashboard({ userId, viewMode = 'full' }: DashboardProps)
 
             if (data.type === "full_state_update") {
                 setStats((prev: any) => {
+                    if (!prev) return prev; // Avoid crash if initial load hasn't finished
+
                     // 1. Update matching accounts
-                    const updatedAccounts = prev.accounts.map((acc: any) => {
+                    const updatedAccounts = prev.accounts?.map((acc: any) => {
                         const update = data.updated_accounts?.find((u: any) => u.account_id === acc.account_id);
                         return update ? update : acc;
-                    });
+                    }) || [];
 
                     // 2. Update matching credit cards
                     const updatedCards = prev.credit_cards?.map((card: any) => {
                         const update = data.updated_credit_cards?.find((u: any) => u.card_id === card.card_id);
                         return update ? update : card;
-                    });
+                    }) || [];
 
                     // 3. Add new transaction
                     let newTxs = prev.recent_transactions || [];
@@ -91,7 +93,7 @@ export default function Dashboard({ userId, viewMode = 'full' }: DashboardProps)
 
                     return {
                         ...prev,
-                        total_balance: data.new_total_balance !== undefined ? data.new_total_balance : data.new_balance,
+                        total_balance: data.new_total_balance !== undefined ? data.new_total_balance : (data.new_balance || prev.total_balance),
                         accounts: updatedAccounts,
                         credit_cards: updatedCards,
                         recent_transactions: newTxs
