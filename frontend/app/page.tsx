@@ -21,7 +21,8 @@ export default function Home() {
     setLoading(true);
     setError("");
     try {
-      await axios.post("http://localhost:8000/api/v1/auth/otp", { email });
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      await axios.post(`${apiUrl}/api/v1/auth/otp`, { email });
       setCurrentStep("otp");
     } catch (err: any) {
       if (err.response && err.response.status === 404) {
@@ -39,7 +40,8 @@ export default function Home() {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.post("http://localhost:8000/api/v1/auth/login", { email, code: otp });
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const res = await axios.post(`${apiUrl}/api/v1/auth/login`, { email, code: otp });
       setUserId(res.data.user_id);
       setUserName(res.data.name);
       setCurrentStep("biometric");
@@ -62,11 +64,11 @@ export default function Home() {
       {/* Background Ambience Removed */}
 
       {currentStep !== "dashboard" ? (
-        <div className="relative z-10 w-full max-w-lg p-10 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl border-t border-l border-white/20 rounded-[2rem] shadow-2xl shadow-black/50">
+        <div className="relative z-10 w-full max-w-lg p-10 bg-linear-to-br from-white/10 to-white/5 backdrop-blur-2xl border-t border-l border-white/20 rounded-4xl shadow-2xl shadow-black/50">
 
           {/* Header */}
           <div className="text-center mb-10">
-            <div className="w-20 h-20 mx-auto bg-gradient-to-tr from-cyan-400 to-blue-600 rounded-3xl flex items-center justify-center shadow-lg shadow-blue-500/30 mb-6">
+            <div className="w-20 h-20 mx-auto bg-linear-to-tr from-cyan-400 to-blue-600 rounded-3xl flex items-center justify-center shadow-lg shadow-blue-500/30 mb-6">
               <ShieldCheck className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-white mb-2">NeuroBank Guardian</h1>
@@ -103,7 +105,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-16 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-lg font-bold rounded-full hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-lg shadow-cyan-500/20"
+                className="w-full h-16 bg-linear-to-r from-cyan-500 to-blue-600 text-white text-lg font-bold rounded-full hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-lg shadow-cyan-500/20"
               >
                 {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Request Access Code <ArrowRight className="w-5 h-5" /></>}
               </button>
@@ -134,7 +136,7 @@ export default function Home() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full h-16 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-lg font-bold rounded-full hover:shadow-lg hover:shadow-emerald-500/25 transition-all flex items-center justify-center gap-3"
+                className="w-full h-16 bg-linear-to-r from-emerald-500 to-teal-600 text-white text-lg font-bold rounded-full hover:shadow-lg hover:shadow-emerald-500/25 transition-all flex items-center justify-center gap-3"
               >
                 {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : <>Verify Identity <ShieldCheck className="w-5 h-5" /></>}
               </button>
@@ -164,7 +166,7 @@ export default function Home() {
         <div className="relative z-10 w-full max-w-7xl animate-in fade-in duration-1000 font-chakra">
           <header className="flex justify-between items-center mb-10 border-b border-white/10 pb-8 bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-lg shadow-black/20">
             <div className="flex items-center gap-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center border border-white/20 shadow-lg shadow-cyan-500/30">
+              <div className="w-16 h-16 bg-linear-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center border border-white/20 shadow-lg shadow-cyan-500/30">
                 <User className="w-8 h-8 text-white" />
               </div>
               <div>
@@ -204,10 +206,10 @@ export default function Home() {
           <footer className="mt-8 border-t border-white/10 pt-8 pb-4">
             <div className="rounded-3xl border border-white/5 bg-black/60 backdrop-blur-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between p-8 group transition-all hover:border-cyan-500/30 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
               {/* Cyberpunk Grid Background */}
-              <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]"></div>
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-size-[20px_20px] mask-[radial-gradient(ellipse_at_center,black,transparent_70%)]"></div>
 
               <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 w-full">
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <div className="inline-flex items-center gap-2 bg-cyan-950/30 px-4 py-1.5 text-[10px] text-cyan-400 uppercase tracking-[0.3em] font-bold font-mono border border-cyan-500/30 rounded-full shadow-[0_0_15px_rgba(8,145,178,0.2)]">
                     <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-blink"></span>
                     System Architecture
@@ -220,7 +222,7 @@ export default function Home() {
                   </p>
                 </div>
 
-                <div className="flex-shrink-0 border-l border-white/10 pl-8 hidden md:block">
+                <div className="shrink-0 border-l border-white/10 pl-8 hidden md:block">
                   <p className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold text-shadow-glow animate-pulse">
                     Data remains 100% Local & Private
                   </p>

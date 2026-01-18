@@ -30,9 +30,10 @@ export default function Dashboard({ userId, viewMode = 'full' }: DashboardProps)
         const fetchData = async () => {
             try {
                 // Fetch Initial User Profile and Suggestions
+                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
                 const [userRes, suggRes] = await Promise.all([
-                    axios.get(`http://localhost:8000/api/v1/users/${userId}`),
-                    axios.get(`http://localhost:8000/api/v1/agent/suggestions/${userId}`)
+                    axios.get(`${apiUrl}/api/v1/users/${userId}`),
+                    axios.get(`${apiUrl}/api/v1/agent/suggestions/${userId}`)
                 ]);
 
                 setStats(userRes.data);
@@ -51,8 +52,9 @@ export default function Dashboard({ userId, viewMode = 'full' }: DashboardProps)
     useEffect(() => {
         if (!userId) return;
 
+        const wsUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace("http", "ws");
         console.log("🔌 Connecting to Real-Time Feed...");
-        const ws = new WebSocket(`ws://localhost:8000/api/v1/realtime/ws/dashboard/${userId}`);
+        const ws = new WebSocket(`${wsUrl}/api/v1/realtime/ws/dashboard/${userId}`);
 
         ws.onopen = () => console.log("✅ Real-Time Feed Connected");
 
@@ -109,7 +111,8 @@ export default function Dashboard({ userId, viewMode = 'full' }: DashboardProps)
 
         setExecutingId(suggestion.id);
         try {
-            const res = await axios.post('http://localhost:8000/api/v1/agent/execute', {
+            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+            const res = await axios.post(`${apiUrl}/api/v1/agent/execute`, {
                 user_id: userId,
                 action: suggestion
             });
@@ -168,7 +171,7 @@ export default function Dashboard({ userId, viewMode = 'full' }: DashboardProps)
                         `}</style>
 
                         {/* Background Effect - Subtle */}
-                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-purple-500/5 opacity-50"></div>
+                        <div className="absolute inset-0 bg-linear-to-br from-cyan-500/5 to-purple-500/5 opacity-50"></div>
 
                         <div className="relative z-10">
                             <div className="flex items-center gap-3 mb-4">
@@ -362,7 +365,7 @@ export default function Dashboard({ userId, viewMode = 'full' }: DashboardProps)
                                             </div>
                                             <div className="w-full bg-black/40 h-1 rounded-full overflow-hidden">
                                                 <div
-                                                    className="h-full bg-gradient-to-r from-pink-500 to-rose-400 rounded-full"
+                                                    className="h-full bg-linear-to-r from-pink-500 to-rose-400 rounded-full"
                                                     style={{ width: `${Math.min(progress, 100)}%` }}
                                                 ></div>
                                             </div>
@@ -378,7 +381,7 @@ export default function Dashboard({ userId, viewMode = 'full' }: DashboardProps)
             {/* Recent Transactions List - Expanded */}
             {viewMode !== 'summary' && (
                 <div className={`bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md flex flex-col ${viewMode === 'activity' ? 'h-[600px]' : 'h-[500px]'}`}>
-                    <div className="flex items-center justify-between mb-6 opacity-70 flex-shrink-0">
+                    <div className="flex items-center justify-between mb-6 opacity-70 shrink-0">
                         <div className="flex items-center gap-2">
                             <Activity className="w-4 h-4 text-cyan-400" />
                             <span className="text-xs font-bold uppercase tracking-widest text-cyan-100">Recent Activity</span>
