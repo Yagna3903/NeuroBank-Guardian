@@ -1,4 +1,4 @@
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
 from services.transaction_service import TransactionService
 from repositories.user_repository import UserRepository
@@ -11,8 +11,8 @@ class AudioService:
         self.user_repository = UserRepository()
         self.speech_key = settings.AZURE_SPEECH_KEY
         self.speech_region = settings.AZURE_SPEECH_REGION
-        # Initialize Gemini
-        self.llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=settings.GOOGLE_API_KEY)
+        # Initialize OpenAI
+        self.llm = ChatOpenAI(model="gpt-4o", openai_api_key=settings.OPENAI_API_KEY, temperature=0)
 
     async def process_audio_intent(self, user_id: str, recognized_text: str):
         """
