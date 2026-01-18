@@ -41,6 +41,52 @@ class TransactionService:
         return {"message": "Users inserted, but no transactions inserted."}
 
 
+    async def add_transaction(self, transaction: Dict[str, Any], user_id: str):
+        """Adds a new transaction and notifies the user via WebSocket."""
+        # 1. Generate Embedding
+        try:
+            vector_embedding = self.embedding_service.embed_query(transaction["description"])
+            transaction["embedding"] = vector_embedding
+        except Exception as e:
+            print(f"⚠️ Failed to generate embedding: {e}")
+            transaction["embedding"] = []
+
+        # 2. Insert into DB
+        transaction["user_id"] = user_id
+        result = self.repository.create_many([transaction]) # reusing create_many for single insert for now
+        
+        # 3. Broadcast Update AND Persist to DB
+        from services.websocket_manager import manager
+        
+        # Fetch updated user profile (e.g. balance)
+        user = self.user_repository.get_user(user_id)
+        if user:
+            # Simple logic: deduct amount from first account found (usually Chequing)
+            # In a real app, you'd specify which account ID to deduct from
+            account = user.get("accounts", [{}])[0]
+            account_type = account.get("type", "chequing")
+            current_balance = account.get("balance", 0)
+            
+            new_balance = current_balance - transaction.get("amount", 0)
+            
+            # --- CRITICAL FIX: Persist new balance to Database ---
+            # This ensures that when the Avatar retrieves the user profile ("Where vector search is going on"),
+            # it sees the UPDATED balance, not the stale one.
+            self.user_repository.update_account_balance(user_id, account_type, new_balance)
+            
+            update_payload = {
+                "type": "balance_update",
+                "new_balance": new_balance,
+                "latest_transaction": {
+                    "merchant": transaction["merchant"],
+                    "amount": transaction["amount"]
+                }
+            }
+            print(f"📡 Broadcasting update to {user_id}: {update_payload}")
+            await manager.send_personal_message(update_payload, user_id)
+            
+        return result
+
     def search_transactions(self, query: str, user_id: str = None) -> List[Dict[str, Any]]:
         """Semantic search for transactions."""
         query_embedding = self.embedding_service.embed_query(query)
