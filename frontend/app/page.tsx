@@ -122,7 +122,7 @@ export default function Home() {
                     setLoading(true);
                     setTimeout(() => {
                       setUserId("user_002");
-                      setUserName("Yagna Patel");
+                      setUserName("Demo User");
                       setCurrentStep("dashboard");
                       setLoading(false);
                     }, 1500);
