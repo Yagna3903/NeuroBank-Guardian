@@ -125,7 +125,8 @@ MOCK_TRANSACTIONS = [
         "merchant": "Unknown Caller Gift Cards",
         "date": datetime(2025, 10, 5),
         "category": "Suspicious",
-        "description": "Purchase of $500 in Google Play gift cards requested by phone caller claiming to be CRA."
+        "description": "Purchase of $500 in Google Play gift cards requested by phone caller claiming to be CRA.",
+        "payment_method": "Credit Card"
     },
     {
         "user_id": "user_002",
@@ -133,7 +134,8 @@ MOCK_TRANSACTIONS = [
         "merchant": "Landlord Corp",
         "date": datetime(2025, 10, 1),
         "category": "Rent",
-        "description": "Monthly rent payment for Apartment 4B."
+        "description": "Monthly rent payment for Apartment 4B.",
+        "payment_method": "Bank Transfer"
     },
     {
         "user_id": "user_002",
@@ -141,7 +143,8 @@ MOCK_TRANSACTIONS = [
         "merchant": "TechSolutions Inc.",
         "date": datetime(2025, 9, 30),
         "category": "Income",
-        "description": "Bi-weekly salary deposit."
+        "description": "Bi-weekly salary deposit.",
+        "payment_method": "Direct Deposit"
     },
     {
         "user_id": "user_002",
@@ -149,7 +152,8 @@ MOCK_TRANSACTIONS = [
         "merchant": "Presto",
         "date": datetime(2025, 10, 5),
         "category": "Transport",
-        "description": "Monthly transit pass reload."
+        "description": "Monthly transit pass reload.",
+        "payment_method": "Debit Card"
     },
     {
         "user_id": "user_002",
@@ -157,7 +161,8 @@ MOCK_TRANSACTIONS = [
         "merchant": "Spotify",
         "date": datetime(2025, 10, 12),
         "category": "Subscription",
-        "description": "Monthly music streaming subscription."
+        "description": "Monthly music streaming subscription.",
+        "payment_method": "Credit Card"
     },
      {
         "user_id": "user_002",
@@ -173,7 +178,8 @@ MOCK_TRANSACTIONS = [
         "merchant": "Uber Eats",
         "date": datetime(2025, 10, 14),
         "category": "Dining",
-        "description": "Friday night dinner delivery."
+        "description": "Friday night dinner delivery.",
+        "payment_method": "Credit Card"
     },
     {
         "user_id": "user_003",
