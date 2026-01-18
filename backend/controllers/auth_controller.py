@@ -12,6 +12,9 @@ class LoginRequest(BaseModel):
     email: str
     code: str
 
+@router.post("/auth/otp")
+async def send_otp(request: OTPRequest):
+    """Generates and sends OTP to user's email."""
     otp = auth_service.generate_otp(request.email)
     if not otp:
         raise HTTPException(status_code=404, detail="Email not linked to any NeuroBank account.")
