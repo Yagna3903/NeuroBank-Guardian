@@ -103,73 +103,111 @@ export default function Dashboard({ userId }: DashboardProps) {
                     </div>
 
                     {/* Score */}
-                    <div className="text-4xl font-bold text-white tracking-tight leading-none mb-6">
+                    <div className="text-5xl font-bold text-white tracking-tight leading-none mb-2">
                         {stats.credit_score || 785}
                     </div>
-
-                    {/* Credit Card Mini Report */}
-                    {stats.credit_cards && stats.credit_cards.length > 0 ? (
-                        <div className="mt-auto pt-4 border-t border-white/5">
-                            <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-3">
-                                    <div className="bg-white/5 p-2 rounded-lg group-hover:bg-white/10 transition-colors">
-                                        <CreditCard className="w-4 h-4 text-purple-300" />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-xs text-white/90 font-bold tracking-wide">{stats.credit_cards[0].name}</span>
-                                        <span className="text-[10px] text-white/50 font-mono tracking-wider">•••• {stats.credit_cards[0].card_id.slice(-4)}</span>
-                                    </div>
-                                </div>
-                                <div className="text-right">
-                                    <div className="text-xs text-white/90 font-bold tabular-nums">${stats.credit_cards[0].current_balance.toLocaleString()}</div>
-                                    <div className="text-[9px] text-white/40 uppercase font-bold tracking-wider">Used</div>
-                                </div>
-                            </div>
-                            {/* Utilization Bar */}
-                            <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full transition-all duration-1000 ease-out group-hover:shadow-[0_0_10px_rgba(168,85,247,0.5)]"
-                                    style={{ width: `${Math.min(((stats.credit_cards[0].current_balance / stats.credit_cards[0].limit) * 100), 100)}%` }}
-                                ></div>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="mt-auto pt-2 text-xs text-white/40 flex items-center gap-2">
-                            <ShieldCheck className="w-3 h-3" /> No active credit lines
-                        </div>
-                    )}
+                    <div className="text-[10px] text-white/40 font-mono uppercase tracking-widest">
+                        Updated: {new Date().toLocaleDateString()}
+                    </div>
                 </div>
             </div>
 
-            {/* Account Details Grid */}
+            {/* Account Details & Credit Cards Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in slide-in-from-bottom-6 duration-700 delay-200">
+                {/* Bank Accounts */}
                 {stats.accounts.map((account: any, i: number) => {
                     const isChequing = account.type.toLowerCase().includes('chequing');
+                    const isSavings = account.type.toLowerCase().includes('savings');
+
+                    let bgClass = 'bg-blue-900/10 border-blue-500/20 hover:bg-blue-900/20 hover:border-blue-500/40';
+                    let dotClass = 'bg-blue-400';
+                    let textClass = 'text-blue-300';
+
+                    if (isSavings) {
+                        bgClass = 'bg-emerald-900/10 border-emerald-500/20 hover:bg-emerald-900/20 hover:border-emerald-500/40';
+                        dotClass = 'bg-emerald-400';
+                        textClass = 'text-emerald-300';
+                    } else if (!isChequing) { // Investment or other
+                        bgClass = 'bg-purple-900/10 border-purple-500/20 hover:bg-purple-900/20 hover:border-purple-500/40';
+                        dotClass = 'bg-purple-400';
+                        textClass = 'text-purple-300';
+                    }
+
                     return (
-                        <div key={i} className={`relative overflow-hidden p-5 rounded-2xl border transition-all duration-300 group
-                            ${isChequing
-                                ? 'bg-blue-900/10 border-blue-500/20 hover:bg-blue-900/20 hover:border-blue-500/40'
-                                : 'bg-purple-900/10 border-purple-500/20 hover:bg-purple-900/20 hover:border-purple-500/40'
-                            }`}>
-
-                            {/* Decorative Background Icon */}
-                            <div className="absolute -bottom-6 -right-6 opacity-10 group-hover:opacity-20 group-hover:scale-110 transition-all duration-500 rotate-12">
-                                <CreditCard className="w-24 h-24 text-white" />
-                            </div>
-
+                        <div key={`acc-${i}`} className={`relative overflow-hidden p-6 rounded-2xl border transition-all duration-300 group ${bgClass} h-full`}>
                             <div className="relative z-10 flex flex-col justify-between h-full">
                                 <div>
-                                    <div className={`text-[10px] uppercase tracking-widest font-bold mb-2 flex items-center gap-2
-                                        ${isChequing ? 'text-blue-300' : 'text-purple-300'}`}>
-                                        <div className={`w-1.5 h-1.5 rounded-full ${isChequing ? 'bg-blue-400' : 'bg-purple-400'}`}></div>
+                                    <div className={`text-[10px] uppercase tracking-widest font-bold mb-2 flex items-center gap-2 ${textClass}`}>
+                                        <div className={`w-1.5 h-1.5 rounded-full ${dotClass}`}></div>
                                         {account.type} Account
                                     </div>
                                     <div className="text-2xl font-bold text-white tracking-tight tabular-nums">
                                         ${account.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                     </div>
+                                    {account.type === 'Investment' && (
+                                        <div className="text-[10px] text-white/50 mt-1">{account.holdings}</div>
+                                    )}
                                 </div>
                                 <div className="mt-4 text-[10px] text-white/30 font-mono tracking-wider">
                                     ID: •••• {account.account_id.slice(-4)}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                })}
+
+                {/* Credit Cards */}
+                {stats.credit_cards && stats.credit_cards.map((card: any, i: number) => {
+                    const availableCredit = card.limit - card.current_balance;
+                    const progress = (card.current_balance / card.limit) * 100;
+
+                    return (
+                        <div key={`cc-${i}`} className="relative overflow-hidden p-5 rounded-2xl border bg-pink-950/10 border-pink-500/20 hover:bg-pink-900/20 hover:border-pink-500/40 transition-all duration-300 group cursor-pointer hover:shadow-[0_0_15px_rgba(236,72,153,0.1)] h-full">
+                            {/* Decorative Background Icon */}
+                            <div className="absolute -bottom-6 -right-6 opacity-5 group-hover:opacity-10 group-hover:scale-110 transition-all duration-500 rotate-12">
+                                <CreditCard className="w-24 h-24 text-white" />
+                            </div>
+
+                            <div className="relative z-10 flex flex-col justify-between h-full min-h-[160px]">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div className="text-[10px] uppercase tracking-widest font-bold flex items-center gap-2 text-pink-300">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-pink-400"></div>
+                                        Credit Card
+                                    </div>
+                                    <CreditCard className="w-4 h-4 text-pink-400" />
+                                </div>
+
+                                <div className="mb-1">
+                                    <div className="text-lg font-bold text-white tracking-tight leading-tight">{card.name}</div>
+                                    <div className="text-[10px] text-white/40 font-mono tracking-wider mt-1">•••• {card.card_id.split('_').pop()}</div>
+                                </div>
+
+                                <div className="space-y-3 mt-4">
+                                    {/* Stats Row */}
+                                    <div className="flex justify-between gap-2">
+                                        <div className="min-w-0">
+                                            <div className="text-[9px] text-white/50 uppercase tracking-wider mb-0.5 truncate">Current Balance</div>
+                                            <div className="text-base font-bold text-white tabular-nums tracking-tight">${card.current_balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                                        </div>
+                                        <div className="text-right min-w-0">
+                                            <div className="text-[9px] text-white/50 uppercase tracking-wider mb-0.5 truncate">Available Credit</div>
+                                            <div className="text-base font-bold text-emerald-400 tabular-nums tracking-tight">${availableCredit.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                                        </div>
+                                    </div>
+
+                                    {/* Utilization Bar */}
+                                    <div>
+                                        <div className="flex justify-between text-[9px] text-white/40 mb-1">
+                                            <span>Limit: ${card.limit.toLocaleString(undefined, { maximumFractionDigits: 0 })}</span>
+                                            <span>{progress.toFixed(0)}% Used</span>
+                                        </div>
+                                        <div className="w-full bg-black/40 h-1 rounded-full overflow-hidden">
+                                            <div
+                                                className="h-full bg-gradient-to-r from-pink-500 to-rose-400 rounded-full"
+                                                style={{ width: `${Math.min(progress, 100)}%` }}
+                                            ></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

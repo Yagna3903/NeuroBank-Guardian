@@ -12,13 +12,13 @@ MOCK_USERS = [
             {
                 "account_id": "acc_001_chq",
                 "type": "Chequing",
-                "balance": 2450.50,
+                "balance": 2453.82,
                 "currency": "CAD"
             },
             {
                 "account_id": "acc_001_sav",
                 "type": "Savings",
-                "balance": 15000.00,
+                "balance": 15234.19,
                 "currency": "CAD"
             }
         ],
@@ -27,17 +27,17 @@ MOCK_USERS = [
                 "loan_id": "loan_001_mtg",
                 "type": "Mortgage",
                 "original_amount": 350000.00,
-                "remaining_balance": 125000.00,
+                "remaining_balance": 124892.45,
                 "interest_rate": 3.45,
                 "next_payment_date": datetime(2025, 11, 1)
             }
         ],
         "credit_cards": [
             {
-                "card_id": "cc_001_visa",
+                "card_id": "cc_4512_3849",
                 "name": "Infinite Visa",
                 "limit": 5000.00,
-                "current_balance": 450.00,
+                "current_balance": 1173.54,
                 "due_date": datetime(2025, 10, 25)
             }
         ]
@@ -53,20 +53,20 @@ MOCK_USERS = [
             {
                 "account_id": "acc_002_chq",
                 "type": "Chequing",
-                "balance": 5800.00,
+                "balance": 5842.21,
                 "currency": "CAD"
             },
             {
                 "account_id": "acc_002_sav",
                 "type": "Savings",
-                "balance": 25000.00,
+                "balance": 25193.45,
                 "currency": "CAD",
                 "interest_rate": 4.5
             },
             {
                 "account_id": "acc_002_inv",
                 "type": "Investment",
-                "balance": 10500.50,
+                "balance": 10567.89,
                 "currency": "CAD",
                 "holdings": "S&P 500 ETF, NASDAQ ETF"
             }
@@ -74,10 +74,10 @@ MOCK_USERS = [
         "loans": [],
         "credit_cards": [
              {
-                "card_id": "cc_002_mc",
+                "card_id": "cc_5423_9012",
                 "name": "World Elite Mastercard",
-                "limit": 5000.00,
-                "current_balance": 1200.00,
+                "limit": 8500.00,
+                "current_balance": 2341.67,
                 "due_date": datetime(2025, 10, 20)
             }
         ]
@@ -93,7 +93,7 @@ MOCK_USERS = [
             {
                 "account_id": "acc_003_chq",
                 "type": "Chequing",
-                "balance": 3200.00,
+                "balance": 3215.11,
                 "currency": "CAD"
             }
         ],
