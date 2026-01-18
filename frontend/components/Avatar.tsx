@@ -54,7 +54,9 @@ export default function Avatar({ userId }: AvatarProps) {
 
         setStatus("Initializing...");
         try {
-            const response = await axios.post('https://backend-1093567910779.us-central1.run.app/api/v1/avatar/session');
+            // HARDCODED PRODUCTION URL
+            const apiUrl = "https://backend-1093567910779.us-central1.run.app";
+            const response = await axios.post(`${apiUrl}/api/v1/avatar/session`);
             const { token, ice_servers, region } = response.data;
 
             const speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(token, region);
@@ -105,7 +107,11 @@ export default function Avatar({ userId }: AvatarProps) {
             console.log("Closing existing WebSocket before reconnecting...");
             websocketRef.current.close();
         }
-        const ws = new WebSocket(`wss://backend-1093567910779.us-central1.run.app/api/v1/avatar/ws?user_id=${uid}`);
+
+        // HARDCODED PRODUCTION WS URL
+        const wsUrl = "wss://backend-1093567910779.us-central1.run.app";
+        const ws = new WebSocket(`${wsUrl}/api/v1/avatar/ws?user_id=${uid}`);
+
         ws.onopen = () => console.log("WS Connected");
         ws.onmessage = async (event) => {
             const msg = JSON.parse(event.data);
