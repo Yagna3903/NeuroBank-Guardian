@@ -11,3 +11,4 @@ azure-cognitiveservices-speech
 aiohttp
 websockets
 fastapi-mail
+uvicorn
