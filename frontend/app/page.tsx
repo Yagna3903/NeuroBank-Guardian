@@ -4,7 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import Avatar from "@/components/Avatar";
 import Dashboard from "@/components/Dashboard";
-import GuardianActive from "@/components/GuardianActive";
+
 import { User, ShieldCheck, Mail, KeyRound, Fingerprint, Loader2, ArrowRight } from "lucide-react";
 
 export default function Home() {
@@ -190,39 +190,44 @@ export default function Home() {
 
             {/* Right Column: Banking Details (Top) */}
             <div className="space-y-8 flex flex-col h-full">
-              <Dashboard userId={userId || "user_001"} />
-
-              {/* System Architecture Notice - Revamped Cool & Black */}
-              <div className="flex-1 min-h-[250px] rounded-3xl border border-white/5 bg-black/60 backdrop-blur-xl relative overflow-hidden flex flex-col justify-center text-center group transition-all hover:border-cyan-500/30 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
-
-                {/* Cyberpunk Grid Background */}
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]"></div>
-
-                <div className="relative z-10 px-8 py-6">
-                  <div className="inline-flex items-center gap-2 bg-cyan-950/30 px-4 py-1.5 text-[10px] text-cyan-400 uppercase tracking-[0.3em] font-bold font-mono border border-cyan-500/30 rounded-full mb-6 shadow-[0_0_15px_rgba(8,145,178,0.2)]">
-                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-blink"></span>
-                    System Architecture
-                  </div>
-
-                  <p className="text-white/90 text-sm md:text-base leading-relaxed font-chakra tracking-wide">
-                    "We deploy <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">Local LLMs & SLMs</span> directly into the banking core, syncing with <span className="text-pink-400 font-bold drop-shadow-[0_0_8px_rgba(244,114,182,0.4)]">real-time avatars</span> via a secure <span className="text-purple-400 font-bold drop-shadow-[0_0_8px_rgba(192,132,252,0.4)]">Vector Database</span>.
-                  </p>
-
-                  <div className="mt-4 pt-4 border-t border-white/5">
-                    <p className="text-xs uppercase tracking-widest text-emerald-400 font-bold text-shadow-glow animate-pulse">
-                      Data remains 100% Local & Private
-                    </p>
-                  </div>
-                </div>
-              </div>
-
+              <Dashboard userId={userId || "user_001"} viewMode="summary" />
             </div>
           </div>
 
-          {/* Bottom Row: Guardian Status (Full Width) */}
-          <div className="w-full">
-            <GuardianActive userId={userId || "user_001"} />
+          {/* Bottom Row: Recent Activity Full Width */}
+          <div className="w-full mt-8 mb-8">
+            <Dashboard userId={userId || "user_001"} viewMode="activity" />
           </div>
+
+
+          {/* Footer: System Architecture */}
+          <footer className="mt-8 border-t border-white/10 pt-8 pb-4">
+            <div className="rounded-3xl border border-white/5 bg-black/60 backdrop-blur-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between p-8 group transition-all hover:border-cyan-500/30 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+              {/* Cyberpunk Grid Background */}
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]"></div>
+
+              <div className="relative z-10 flex flex-col md:flex-row items-center gap-8 w-full">
+                <div className="flex-shrink-0">
+                  <div className="inline-flex items-center gap-2 bg-cyan-950/30 px-4 py-1.5 text-[10px] text-cyan-400 uppercase tracking-[0.3em] font-bold font-mono border border-cyan-500/30 rounded-full shadow-[0_0_15px_rgba(8,145,178,0.2)]">
+                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-blink"></span>
+                    System Architecture
+                  </div>
+                </div>
+
+                <div className="flex-1 text-center md:text-left">
+                  <p className="text-white/80 text-sm leading-relaxed font-chakra tracking-wide max-w-3xl">
+                    "We deploy <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">Local LLMs & SLMs</span> directly into the banking core, syncing with <span className="text-pink-400 font-bold drop-shadow-[0_0_8px_rgba(244,114,182,0.4)]">real-time avatars</span> via a secure <span className="text-purple-400 font-bold drop-shadow-[0_0_8px_rgba(192,132,252,0.4)]">Vector Database</span>.
+                  </p>
+                </div>
+
+                <div className="flex-shrink-0 border-l border-white/10 pl-8 hidden md:block">
+                  <p className="text-[10px] uppercase tracking-widest text-emerald-400 font-bold text-shadow-glow animate-pulse">
+                    Data remains 100% Local & Private
+                  </p>
+                </div>
+              </div>
+            </div>
+          </footer>
 
         </div>
       )}
