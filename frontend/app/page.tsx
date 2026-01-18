@@ -21,7 +21,7 @@ export default function Home() {
     setLoading(true);
     setError("");
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const apiUrl = "https://backend-1093567910779.us-central1.run.app";
       await axios.post(`${apiUrl}/api/v1/auth/otp`, { email });
       setCurrentStep("otp");
     } catch (err: any) {
@@ -40,7 +40,7 @@ export default function Home() {
     setLoading(true);
     setError("");
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const apiUrl = "https://backend-1093567910779.us-central1.run.app";
       const res = await axios.post(`${apiUrl}/api/v1/auth/login`, { email, code: otp });
       setUserId(res.data.user_id);
       setUserName(res.data.name);

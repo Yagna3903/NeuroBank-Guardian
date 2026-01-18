@@ -54,7 +54,7 @@ export default function Avatar({ userId }: AvatarProps) {
 
         setStatus("Initializing...");
         try {
-            const response = await axios.post('http://localhost:8000/api/v1/avatar/session');
+            const response = await axios.post('https://backend-1093567910779.us-central1.run.app/api/v1/avatar/session');
             const { token, ice_servers, region } = response.data;
 
             const speechConfig = SpeechSDK.SpeechConfig.fromAuthorizationToken(token, region);
@@ -105,7 +105,7 @@ export default function Avatar({ userId }: AvatarProps) {
             console.log("Closing existing WebSocket before reconnecting...");
             websocketRef.current.close();
         }
-        const ws = new WebSocket(`ws://localhost:8000/api/v1/avatar/ws?user_id=${uid}`);
+        const ws = new WebSocket(`wss://backend-1093567910779.us-central1.run.app/api/v1/avatar/ws?user_id=${uid}`);
         ws.onopen = () => console.log("WS Connected");
         ws.onmessage = async (event) => {
             const msg = JSON.parse(event.data);

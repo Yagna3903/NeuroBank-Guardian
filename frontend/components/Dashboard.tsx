@@ -30,7 +30,7 @@ export default function Dashboard({ userId, viewMode = 'full' }: DashboardProps)
         const fetchData = async () => {
             try {
                 // Fetch Initial User Profile and Suggestions
-                const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+                const apiUrl = "https://backend-1093567910779.us-central1.run.app";
                 const [userRes, suggRes] = await Promise.all([
                     axios.get(`${apiUrl}/api/v1/users/${userId}`),
                     axios.get(`${apiUrl}/api/v1/agent/suggestions/${userId}`)
@@ -52,7 +52,7 @@ export default function Dashboard({ userId, viewMode = 'full' }: DashboardProps)
     useEffect(() => {
         if (!userId) return;
 
-        const wsUrl = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000").replace("http", "ws");
+        const wsUrl = "wss://backend-1093567910779.us-central1.run.app";
         console.log("🔌 Connecting to Real-Time Feed...");
         const ws = new WebSocket(`${wsUrl}/api/v1/realtime/ws/dashboard/${userId}`);
 
@@ -111,7 +111,7 @@ export default function Dashboard({ userId, viewMode = 'full' }: DashboardProps)
 
         setExecutingId(suggestion.id);
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+            const apiUrl = "https://backend-1093567910779.us-central1.run.app";
             const res = await axios.post(`${apiUrl}/api/v1/agent/execute`, {
                 user_id: userId,
                 action: suggestion

@@ -16,7 +16,7 @@ export default function GuardianActive({ userId }: GuardianActiveProps) {
     useEffect(() => {
         const fetchCount = async () => {
             try {
-                const userRes = await axios.get(`http://localhost:8000/api/v1/users/${userId}`);
+                const userRes = await axios.get(`https://backend-1093567910779.us-central1.run.app/api/v1/users/${userId}`);
                 setAccountCount(userRes.data.accounts.length);
             } catch (e) { console.error(e) }
         }
@@ -27,7 +27,7 @@ export default function GuardianActive({ userId }: GuardianActiveProps) {
     // WebSocket for Feed
     useEffect(() => {
         if (!userId) return;
-        const ws = new WebSocket(`ws://localhost:8000/api/v1/realtime/ws/dashboard/${userId}`);
+        const ws = new WebSocket(`wss://backend-1093567910779.us-central1.run.app/api/v1/realtime/ws/dashboard/${userId}`);
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
             if (data.type === "balance_update" && data.latest_transaction) {
@@ -38,7 +38,7 @@ export default function GuardianActive({ userId }: GuardianActiveProps) {
     }, [userId]);
 
     const simulateTransaction = () => {
-        const ws = new WebSocket(`ws://localhost:8000/api/v1/realtime/ws/dashboard/${userId}`);
+        const ws = new WebSocket(`wss://backend-1093567910779.us-central1.run.app/api/v1/realtime/ws/dashboard/${userId}`);
         ws.onopen = () => {
             ws.send(JSON.stringify({ type: "simulate_transaction" }));
             ws.close();
