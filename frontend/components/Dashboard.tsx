@@ -92,20 +92,52 @@ export default function Dashboard({ userId }: DashboardProps) {
                     </div>
                 </div>
 
-                <div className="bg-purple-950/20 p-7 rounded-3xl border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.05)] backdrop-blur-md relative overflow-hidden transition-all hover:bg-purple-900/30 hover:border-purple-400/30">
-                    {/* Background Glow based on Risk */}
-                    <div className={`absolute -top-10 -right-10 w-32 h-32 rounded-full blur-[60px] opacity-20 ${stats.risk_score > 80 ? 'bg-emerald-500' : 'bg-amber-500'}`}></div>
+                <div className="bg-purple-950/20 p-6 rounded-3xl border border-purple-500/20 shadow-[0_0_15px_rgba(168,85,247,0.05)] backdrop-blur-md relative overflow-hidden transition-all hover:bg-purple-900/30 hover:border-purple-400/30 flex flex-col justify-between group">
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-2 text-purple-200 font-semibold uppercase tracking-widest text-xs">
+                            <TrendingUp className="w-4 h-4 text-purple-400" />
+                            <span>Credit Score</span>
+                        </div>
+                        <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold tracking-wider border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">EXCELLENT</span>
+                    </div>
 
-                    <div className="flex items-center gap-3 text-purple-200 mb-4 font-semibold uppercase tracking-widest text-xs relative z-10">
-                        <Activity className="w-5 h-5 text-purple-400 animate-pulse" />
-                        <span>Risk Score</span>
+                    {/* Score */}
+                    <div className="text-4xl font-bold text-white tracking-tight leading-none mb-6">
+                        {stats.credit_score || 785}
                     </div>
-                    <div className={`text-3xl font-bold relative z-10 ${stats.risk_score > 80 ? 'text-emerald-400' : 'text-amber-400'} mt-1`}>
-                        {stats.risk_score}<span className="text-sm opacity-60 ml-1">/100</span>
-                    </div>
-                    <div className="text-[10px] font-mono text-white/40 mt-3 relative z-10 uppercase tracking-widest">
-                        {stats.risk_score > 80 ? 'System Secured' : 'Action Required'}
-                    </div>
+
+                    {/* Credit Card Mini Report */}
+                    {stats.credit_cards && stats.credit_cards.length > 0 ? (
+                        <div className="mt-auto pt-4 border-t border-white/5">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-white/5 p-2 rounded-lg group-hover:bg-white/10 transition-colors">
+                                        <CreditCard className="w-4 h-4 text-purple-300" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-xs text-white/90 font-bold tracking-wide">{stats.credit_cards[0].name}</span>
+                                        <span className="text-[10px] text-white/50 font-mono tracking-wider">•••• {stats.credit_cards[0].card_id.slice(-4)}</span>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <div className="text-xs text-white/90 font-bold tabular-nums">${stats.credit_cards[0].current_balance.toLocaleString()}</div>
+                                    <div className="text-[9px] text-white/40 uppercase font-bold tracking-wider">Used</div>
+                                </div>
+                            </div>
+                            {/* Utilization Bar */}
+                            <div className="w-full bg-black/40 h-1.5 rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-gradient-to-r from-purple-500 to-cyan-400 rounded-full transition-all duration-1000 ease-out group-hover:shadow-[0_0_10px_rgba(168,85,247,0.5)]"
+                                    style={{ width: `${Math.min(((stats.credit_cards[0].current_balance / stats.credit_cards[0].limit) * 100), 100)}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="mt-auto pt-2 text-xs text-white/40 flex items-center gap-2">
+                            <ShieldCheck className="w-3 h-3" /> No active credit lines
+                        </div>
+                    )}
                 </div>
             </div>
 
