@@ -1,14 +1,10 @@
 pymongo
 python-dotenv
-langchain-google-genai
+langchain-openai
 langchain-core
 fastapi
 uvicorn
 azure-cognitiveservices-speech
 aiohttp
 websockets
-azure-cognitiveservices-speech
-aiohttp
-websockets
 fastapi-mail
-uvicorn
