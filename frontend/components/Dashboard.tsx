@@ -8,6 +8,15 @@ interface DashboardProps {
     userId: string;
 }
 
+// Helper to determine credit status
+const getCreditStatus = (score: number) => {
+    if (score >= 800) return { label: 'EXCELLENT', color: 'text-emerald-300', bg: 'bg-emerald-500/20', border: 'border-emerald-500/30' };
+    if (score >= 740) return { label: 'VERY GOOD', color: 'text-cyan-300', bg: 'bg-cyan-500/20', border: 'border-cyan-500/30' };
+    if (score >= 670) return { label: 'GOOD', color: 'text-blue-300', bg: 'bg-blue-500/20', border: 'border-blue-500/30' };
+    if (score >= 580) return { label: 'FAIR', color: 'text-yellow-300', bg: 'bg-yellow-500/20', border: 'border-yellow-500/30' };
+    return { label: 'POOR', color: 'text-red-300', bg: 'bg-red-500/20', border: 'border-red-500/30' };
+};
+
 export default function Dashboard({ userId }: DashboardProps) {
     const [stats, setStats] = useState<any>(null);
     const [loading, setLoading] = useState(true);
@@ -99,7 +108,14 @@ export default function Dashboard({ userId }: DashboardProps) {
                             <TrendingUp className="w-4 h-4 text-purple-400" />
                             <span>Credit Score</span>
                         </div>
-                        <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full font-bold tracking-wider border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">EXCELLENT</span>
+                        {(() => {
+                            const status = getCreditStatus(stats.credit_score || 0);
+                            return (
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold tracking-wider border shadow-sm ${status.color} ${status.bg} ${status.border}`}>
+                                    {status.label}
+                                </span>
+                            );
+                        })()}
                     </div>
 
                     {/* Score */}
@@ -231,7 +247,12 @@ export default function Dashboard({ userId }: DashboardProps) {
                                 </div>
                                 <div>
                                     <div className="text-sm font-bold text-white group-hover:text-cyan-200 transition-colors">{tx.merchant}</div>
-                                    <div className="text-[10px] text-white/40 uppercase tracking-wider">{new Date(tx.date).toLocaleDateString()} • {tx.category}</div>
+                                    <div className="text-[10px] text-white/40 uppercase tracking-wider">
+                                        {new Date(tx.date).toLocaleDateString()} • {tx.category}
+                                        {tx.payment_method && (
+                                            <span className="ml-2 text-cyan-400/80">• {tx.payment_method}</span>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
                             <div className="font-mono text-sm font-bold text-white/90">
