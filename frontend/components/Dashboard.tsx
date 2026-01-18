@@ -243,7 +243,7 @@ export default function Dashboard({ userId }: DashboardProps) {
                     }
 
                     return (
-                        <div key={`acc-${i}`} className={`relative overflow-hidden p-6 rounded-2xl border transition-all duration-300 group ${bgClass} h-full`}>
+                        <div key={account.account_id} className={`relative overflow-hidden p-6 rounded-2xl border transition-all duration-300 group ${bgClass} h-full`}>
                             <div className="relative z-10 flex flex-col justify-between h-full">
                                 <div>
                                     <div className={`text-[10px] uppercase tracking-widest font-bold mb-2 flex items-center gap-2 ${textClass}`}>
@@ -271,7 +271,7 @@ export default function Dashboard({ userId }: DashboardProps) {
                     const progress = (card.current_balance / card.limit) * 100;
 
                     return (
-                        <div key={`cc-${i}`} className="relative overflow-hidden p-5 rounded-2xl border bg-pink-950/10 border-pink-500/20 hover:bg-pink-900/20 hover:border-pink-500/40 transition-all duration-300 group cursor-pointer hover:shadow-[0_0_15px_rgba(236,72,153,0.1)] h-full">
+                        <div key={card.card_id} className="relative overflow-hidden p-5 rounded-2xl border bg-pink-950/10 border-pink-500/20 hover:bg-pink-900/20 hover:border-pink-500/40 transition-all duration-300 group cursor-pointer hover:shadow-[0_0_15px_rgba(236,72,153,0.1)] h-full">
                             {/* Decorative Background Icon */}
                             <div className="absolute -bottom-6 -right-6 opacity-5 group-hover:opacity-10 group-hover:scale-110 transition-all duration-500 rotate-12">
                                 <CreditCard className="w-24 h-24 text-white" />

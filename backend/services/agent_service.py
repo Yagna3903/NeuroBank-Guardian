@@ -142,7 +142,7 @@ class AgentService:
         await embedding_service.add_to_vector_store(transaction_record)
 
         # Calculate True Total Balance (Sum of all liquid accounts)
-        new_total_balance = sum(acc["balance"] for acc in user["accounts"])
+        new_total_balance = round(sum(acc["balance"] for acc in user["accounts"]), 2)
         
         # Get Chequing Balance for legacy field
         chequing_ref = next((acc for acc in user["accounts"] if "chequing" in acc["type"].lower()), None)
