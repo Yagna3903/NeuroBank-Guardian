@@ -13,6 +13,7 @@ class Settings:
     AZURE_SPEECH_KEY: str = os.getenv("AZURE_SPEECH_KEY")
     AZURE_SPEECH_REGION: str = os.getenv("AZURE_SPEECH_REGION")
     ELEVENLABS_API_KEY: str = os.getenv("ELEVENLABS_API_KEY")
+    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY")
     
     DB_NAME: str = "neurobank"
     COLLECTION_NAME: str = "transactions"
