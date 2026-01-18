@@ -55,7 +55,7 @@ class AgentService:
                         "card_id": cc["card_id"],
                         "priority": "MEDIUM"
                     })
-        # 3. Smart Savings Suggestion (Always Active)
+        # 3. Smart Savings Suggestions (Multiple Options)
         has_savings = any(acc["type"] == "Savings" for acc in user.get("accounts", []))
         if has_savings:
              suggestions.append({
@@ -64,6 +64,24 @@ class AgentService:
                 "title": "Smart Save $50",
                 "description": "Move $50 to Savings",
                 "amount": 50.00,
+                "to_account_type": "Savings",
+                "priority": "LOW"
+            })
+             suggestions.append({
+                "id": "smart_save_100",
+                "type": "TRANSFER",
+                "title": "Smart Save $100",
+                "description": "Move $100 to Savings",
+                "amount": 100.00,
+                "to_account_type": "Savings",
+                "priority": "LOW"
+            })
+             suggestions.append({
+                "id": "smart_save_250",
+                "type": "TRANSFER",
+                "title": "Smart Save $250",
+                "description": "Move $250 to Savings",
+                "amount": 250.00,
                 "to_account_type": "Savings",
                 "priority": "LOW"
             })
