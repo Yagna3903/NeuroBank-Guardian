@@ -163,6 +163,13 @@ class AgentService:
         chequing_ref = next((acc for acc in user["accounts"] if "chequing" in acc["type"].lower()), None)
         new_chequing_balance = chequing_ref["balance"] if chequing_ref else 0
 
+        # 4.5 Persist Changes to Database (CRITICAL FIX)
+        repo.update_user(user_id, {
+            "accounts": user["accounts"],
+            "credit_cards": user.get("credit_cards", []),
+            "bills": user.get("bills", [])
+        })
+
         # 5. Push Granular Real-Time Update
         await manager.send_personal_message({
             "type": "full_state_update", 

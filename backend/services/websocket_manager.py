@@ -22,8 +22,15 @@ class ConnectionManager:
         print(f"🔌 User {user_id} disconnected.")
 
     async def send_personal_message(self, message: dict, user_id: str):
+        print(f"📡 [WS] Attempting to send message to {user_id}. Active users: {list(self.active_connections.keys())}")
         if user_id in self.active_connections:
             for connection in self.active_connections[user_id]:
-                await connection.send_json(message)
+                try:
+                    await connection.send_json(message)
+                    print(f"✅ [WS] Sent to {user_id}")
+                except Exception as e:
+                    print(f"❌ [WS] Failed to send to {user_id}: {e}")
+        else:
+            print(f"⚠️ [WS] User {user_id} not connected. Message dropped.")
 
 manager = ConnectionManager()

@@ -25,3 +25,7 @@ class UserRepository:
             {"user_id": user_id, "accounts.type": account_type},
             {"$set": {"accounts.$.balance": new_balance}}
         )
+
+    def update_user(self, user_id: str, updates: Dict[str, Any]):
+        """Generic update for user document fields."""
+        self.collection.update_one({"user_id": user_id}, {"$set": updates})
