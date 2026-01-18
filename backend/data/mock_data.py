@@ -7,6 +7,7 @@ MOCK_USERS = [
         "email": "emailtosolankiom@gmail.com",
         "phone": "+1-416-555-0101",
         "risk_score": 95,
+        "credit_score": 780,
         "accounts": [
             {
                 "account_id": "acc_001_chq",
@@ -34,6 +35,7 @@ MOCK_USERS = [
         "credit_cards": [
             {
                 "card_id": "cc_001_visa",
+                "name": "Infinite Visa",
                 "limit": 5000.00,
                 "current_balance": 450.00,
                 "due_date": datetime(2025, 10, 25)
@@ -46,18 +48,34 @@ MOCK_USERS = [
         "email": "yagna3903@gmail.com",
         "phone": "+1-647-555-0199",
         "risk_score": 88,
+        "credit_score": 720,
         "accounts": [
             {
                 "account_id": "acc_002_chq",
                 "type": "Chequing",
                 "balance": 5800.00,
                 "currency": "CAD"
+            },
+            {
+                "account_id": "acc_002_sav",
+                "type": "Savings",
+                "balance": 25000.00,
+                "currency": "CAD",
+                "interest_rate": 4.5
+            },
+            {
+                "account_id": "acc_002_inv",
+                "type": "Investment",
+                "balance": 10500.50,
+                "currency": "CAD",
+                "holdings": "S&P 500 ETF, NASDAQ ETF"
             }
         ],
         "loans": [],
         "credit_cards": [
              {
                 "card_id": "cc_002_mc",
+                "name": "World Elite Mastercard",
                 "limit": 5000.00,
                 "current_balance": 1200.00,
                 "due_date": datetime(2025, 10, 20)
@@ -70,6 +88,7 @@ MOCK_USERS = [
         "email": "tn24vy@brocku.ca",
         "phone": "+1-647-555-0200",
         "risk_score": 92,
+        "credit_score": 810,
         "accounts": [
             {
                 "account_id": "acc_003_chq",
@@ -115,6 +134,46 @@ MOCK_TRANSACTIONS = [
         "date": datetime(2025, 10, 1),
         "category": "Rent",
         "description": "Monthly rent payment for Apartment 4B."
+    },
+    {
+        "user_id": "user_002",
+        "amount": 3500.00,
+        "merchant": "TechSolutions Inc.",
+        "date": datetime(2025, 9, 30),
+        "category": "Income",
+        "description": "Bi-weekly salary deposit."
+    },
+    {
+        "user_id": "user_002",
+        "amount": 92.50,
+        "merchant": "Presto",
+        "date": datetime(2025, 10, 5),
+        "category": "Transport",
+        "description": "Monthly transit pass reload."
+    },
+    {
+        "user_id": "user_002",
+        "amount": 14.99,
+        "merchant": "Spotify",
+        "date": datetime(2025, 10, 12),
+        "category": "Subscription",
+        "description": "Monthly music streaming subscription."
+    },
+     {
+        "user_id": "user_002",
+        "amount": 250.00,
+        "merchant": "Transfer to Savings",
+        "date": datetime(2025, 10, 1),
+        "category": "Transfer",
+        "description": "Automatic monthly transfer to High Interest Savings Account."
+    },
+     {
+        "user_id": "user_002",
+        "amount": 65.00,
+        "merchant": "Uber Eats",
+        "date": datetime(2025, 10, 14),
+        "category": "Dining",
+        "description": "Friday night dinner delivery."
     },
     {
         "user_id": "user_003",
