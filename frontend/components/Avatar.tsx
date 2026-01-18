@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as SpeechSDK from 'microsoft-cognitiveservices-speech-sdk';
 import axios from 'axios';
 import { Mic, MicOff, Video, Loader2 } from 'lucide-react';
+import SuggestionPrompts from './SuggestionPrompts';
 
 interface AvatarProps {
     userId: string;
@@ -18,6 +19,13 @@ export default function Avatar({ userId }: AvatarProps) {
     const [isPlaying, setIsPlaying] = useState(false);
     const [status, setStatus] = useState("Idle");
     const [transcript, setTranscript] = useState<TranscriptMessage[]>([]);
+    const [suggestions, setSuggestions] = useState<string[]>([
+        "Hello AI",
+        "Check my balance",
+        "Recent transactions",
+        "Spending analysis",
+        "Investment update"
+    ]);
 
     const videoRef = useRef<HTMLVideoElement>(null);
     const transcriptRef = useRef<HTMLDivElement>(null);
@@ -104,6 +112,9 @@ export default function Avatar({ userId }: AvatarProps) {
             if (msg.type === "avatar_response") {
                 setTranscript(prev => [...prev, { role: 'ai', text: msg.text }]);
 
+                // Dynamic suggestions based on AI response context
+                updateSuggestions(msg.text);
+
                 if (synthesizerRef.current) {
                     setStatus("Speaking...");
                     isSpeakingRef.current = true;
@@ -114,6 +125,39 @@ export default function Avatar({ userId }: AvatarProps) {
             }
         };
         websocketRef.current = ws;
+    };
+
+    const updateSuggestions = (text: string) => {
+        const lowerText = text.toLowerCase();
+
+        if (lowerText.includes("transfer") || lowerText.includes("send")) {
+            setSuggestions(["Confirm transfer", "Change amount", "Cancel transaction"]);
+        } else if (lowerText.includes("balance") || lowerText.includes("money")) {
+            setSuggestions(["Show details", "Spending analysis", "Transfer money"]);
+        } else if (lowerText.includes("transaction") || lowerText.includes("spent")) {
+            setSuggestions(["Filter by date", "Report issue", "Export statement"]);
+        } else if (lowerText.includes("hello") || lowerText.includes("hi")) {
+            setSuggestions(["Check my balance", "Pay a bill", "Financial advice"]);
+        } else {
+            // Default refresh
+            setSuggestions(["Account summary", "Security settings", "Contact support"]);
+        }
+    };
+
+    const handleSuggestionSelect = (text: string) => {
+        // Send selected suggestion as user input
+        if (websocketRef.current && websocketRef.current.readyState === WebSocket.OPEN) {
+            setTranscript(prev => [...prev, { role: 'user', text }]);
+            websocketRef.current.send(JSON.stringify({
+                type: "text_input",
+                text: text
+            }));
+        } else {
+            // If not connected, treating it as a wake word or initial command
+            if (text === "Hello AI") {
+                startAvatar();
+            }
+        }
     };
 
     const startMicrophone = (speechConfig: SpeechSDK.SpeechConfig) => {
@@ -268,6 +312,14 @@ export default function Avatar({ userId }: AvatarProps) {
                                 </div>
                             </div>
                         ))}
+                    </div>
+
+                    {/* Integrated Suggestions Panel */}
+                    <div className="border-t border-white/5 bg-black/40 backdrop-blur-md">
+                        <SuggestionPrompts
+                            suggestions={suggestions}
+                            onSelect={handleSuggestionSelect}
+                        />
                     </div>
 
                     <div className="p-6 border-t border-white/10 bg-black/20">
