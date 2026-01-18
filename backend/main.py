@@ -4,6 +4,7 @@ from routes.transaction_routes import api_router
 from controllers.avatar_controller import router as avatar_router
 from controllers.auth_controller import router as auth_router
 from controllers.user_controller import router as user_router
+from routes.realtime_routes import router as realtime_router
 from config.database import Database
 
 app = FastAPI(title="NeuroBank-Guardian API", version="0.1.0")
@@ -25,6 +26,7 @@ app.add_middleware(
 # Include Routers
 app.include_router(api_router, prefix="/api/v1/transactions")
 app.include_router(avatar_router, prefix="/api/v1/avatar")
+app.include_router(realtime_router, prefix="/api/v1/realtime")
 app.include_router(auth_router, prefix="/api/v1")
 app.include_router(user_router, prefix="/api/v1")
 

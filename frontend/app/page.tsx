@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import Avatar from "@/components/Avatar";
 import Dashboard from "@/components/Dashboard";
+import GuardianActive from "@/components/GuardianActive";
 import { User, ShieldCheck, Mail, KeyRound, Fingerprint, Loader2, ArrowRight } from "lucide-react";
 
 export default function Home() {
@@ -22,8 +23,12 @@ export default function Home() {
     try {
       await axios.post("http://localhost:8000/api/v1/auth/otp", { email });
       setCurrentStep("otp");
-    } catch (err) {
-      setError("Failed to send OTP. Is the backend running?");
+    } catch (err: any) {
+      if (err.response && err.response.status === 404) {
+        setError("⚠️ Identity claim rejected. Email address not found in neural database.");
+      } else {
+        setError("Failed to send OTP. Connection to backend failed.");
+      }
     } finally {
       setLoading(false);
     }
@@ -45,14 +50,14 @@ export default function Home() {
       }, 2500);
 
     } catch (err) {
-      setError("Invalid Code. Check the backend terminal!");
+      setError("Invalid Security Code. access denied.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0a0a1a] to-black text-white font-sans overflow-hidden">
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 pb-20 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#0a0a1a] to-black text-white font-chakra overflow-hidden bg-fixed">
 
       {/* Background Ambience */}
       <div className="absolute inset-0 pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 brightness-100 contrast-150"></div>
@@ -71,7 +76,10 @@ export default function Home() {
 
           {/* ERROR MSG */}
           {error && (
-            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/50 rounded-xl text-red-100 text-sm text-center font-medium shadow-lg">
+            <div className={`mb-6 p-4 border rounded-xl text-sm text-center font-bold tracking-wide shadow-lg flex items-center justify-center gap-2 ${error.includes("not found")
+              ? "bg-amber-500/20 border-amber-500/50 text-amber-200 shadow-amber-900/20"
+              : "bg-red-500/20 border-red-500/50 text-red-200 shadow-red-900/20"
+              }`}>
               {error}
             </div>
           )}
@@ -154,36 +162,69 @@ export default function Home() {
         </div>
       ) : (
         // DASHBOARD VIEW
-        <div className="relative z-10 w-full max-w-7xl animate-in fade-in duration-1000">
+        <div className="relative z-10 w-full max-w-7xl animate-in fade-in duration-1000 font-chakra">
           <header className="flex justify-between items-center mb-10 border-b border-white/10 pb-8 bg-white/5 backdrop-blur-md p-6 rounded-2xl shadow-lg shadow-black/20">
             <div className="flex items-center gap-6">
               <div className="w-16 h-16 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center border border-white/20 shadow-lg shadow-cyan-500/30">
                 <User className="w-8 h-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-white mb-1">Welcome back, {userName}</h1>
+                <h1 className="text-3xl font-bold text-white mb-1 tracking-wide">Welcome back, {userName}</h1>
                 <p className="text-sm text-emerald-300 font-mono flex items-center gap-2 font-bold tracking-wider">
                   <span className="w-3 h-3 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]"></span>
                   SECURE SESSION ACTIVE
                 </p>
               </div>
             </div>
-            <button onClick={() => window.location.reload()} className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 px-6 py-3 rounded-xl text-red-200 text-sm font-bold transition-all shadow-lg hover:scale-105 active:scale-95">
+            <button onClick={() => window.location.reload()} className="bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 px-6 py-3 rounded-xl text-red-200 text-sm font-bold transition-all shadow-lg hover:shadow-red-500/20 hover:scale-105 active:scale-95 font-chakra tracking-widest">
               Sign Out
             </button>
           </header>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start mb-8">
             {/* Left Column: Avatar Interaction */}
-            <div className="lg:col-span-2 space-y-8">
-              <Avatar userId={userId || "user_001"} />
+            <div className="lg:col-span-2 space-y-8 h-full">
+              <div className="h-[750px] w-full sticky top-8">
+                <Avatar userId={userId || "user_001"} />
+              </div>
             </div>
 
-            {/* Right Column: Banking Details */}
-            <div className="space-y-8">
+            {/* Right Column: Banking Details (Top) */}
+            <div className="space-y-8 flex flex-col h-full">
               <Dashboard userId={userId || "user_001"} />
+
+              {/* System Architecture Notice - Revamped Cool & Black */}
+              <div className="flex-1 min-h-[250px] rounded-3xl border border-white/5 bg-black/60 backdrop-blur-xl relative overflow-hidden flex flex-col justify-center text-center group transition-all hover:border-cyan-500/30 hover:shadow-[0_0_30px_rgba(6,182,212,0.15)]">
+
+                {/* Cyberpunk Grid Background */}
+                <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_70%)]"></div>
+
+                <div className="relative z-10 px-8 py-6">
+                  <div className="inline-flex items-center gap-2 bg-cyan-950/30 px-4 py-1.5 text-[10px] text-cyan-400 uppercase tracking-[0.3em] font-bold font-mono border border-cyan-500/30 rounded-full mb-6 shadow-[0_0_15px_rgba(8,145,178,0.2)]">
+                    <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-blink"></span>
+                    System Architecture
+                  </div>
+
+                  <p className="text-white/90 text-sm md:text-base leading-relaxed font-chakra tracking-wide">
+                    "We deploy <span className="text-white font-bold drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">Local LLMs & SLMs</span> directly into the banking core, syncing with <span className="text-pink-400 font-bold drop-shadow-[0_0_8px_rgba(244,114,182,0.4)]">real-time avatars</span> via a secure <span className="text-purple-400 font-bold drop-shadow-[0_0_8px_rgba(192,132,252,0.4)]">Vector Database</span>.
+                  </p>
+
+                  <div className="mt-4 pt-4 border-t border-white/5">
+                    <p className="text-xs uppercase tracking-widest text-emerald-400 font-bold text-shadow-glow animate-pulse">
+                      Data remains 100% Local & Private
+                    </p>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
+
+          {/* Bottom Row: Guardian Status (Full Width) */}
+          <div className="w-full">
+            <GuardianActive userId={userId || "user_001"} />
+          </div>
+
         </div>
       )}
 

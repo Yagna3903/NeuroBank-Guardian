@@ -18,3 +18,10 @@ class UserRepository:
     def get_user_by_email(self, email: str) -> Dict[str, Any]:
         """Retrieves a user by email."""
         return self.collection.find_one({"email": email})
+
+    def update_account_balance(self, user_id: str, account_type: str, new_balance: float):
+        """Updates the balance of a specific account for a user."""
+        self.collection.update_one(
+            {"user_id": user_id, "accounts.type": account_type},
+            {"$set": {"accounts.$.balance": new_balance}}
+        )
