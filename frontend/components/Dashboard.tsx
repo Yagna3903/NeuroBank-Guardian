@@ -177,6 +177,36 @@ export default function Dashboard({ userId }: DashboardProps) {
                 })}
             </div>
 
+            {/* Recent Transactions List */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
+                <div className="flex items-center gap-2 mb-6 opacity-70">
+                    <Activity className="w-4 h-4 text-cyan-400" />
+                    <span className="text-xs font-bold uppercase tracking-widest text-cyan-100">Recent Activity</span>
+                </div>
+
+                <div className="space-y-4">
+                    {(stats.recent_transactions || []).map((tx: any, i: number) => (
+                        <div key={i} className="flex items-center justify-between group hover:bg-white/5 p-2 rounded-lg transition-colors -mx-2">
+                            <div className="flex items-center gap-4">
+                                <div className="w-10 h-10 rounded-full bg-cyan-950/50 border border-cyan-500/20 flex items-center justify-center text-cyan-400 text-xs font-bold">
+                                    {tx.merchant.slice(0, 1)}
+                                </div>
+                                <div>
+                                    <div className="text-sm font-bold text-white group-hover:text-cyan-200 transition-colors">{tx.merchant}</div>
+                                    <div className="text-[10px] text-white/40 uppercase tracking-wider">{new Date(tx.date).toLocaleDateString()} • {tx.category}</div>
+                                </div>
+                            </div>
+                            <div className="font-mono text-sm font-bold text-white/90">
+                                -${tx.amount.toFixed(2)}
+                            </div>
+                        </div>
+                    ))}
+                    {(!stats.recent_transactions || stats.recent_transactions.length === 0) && (
+                        <div className="text-center text-white/30 text-xs py-4">No recent transactions found.</div>
+                    )}
+                </div>
+            </div>
+
         </div>
     );
 }
