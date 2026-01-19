@@ -1,6 +1,4 @@
 # === Environment Variables ===
-.env
-.env.local
 .env.*.local
 *.env
 
@@ -114,3 +112,4 @@ credentials.json
 *.pid
 *.seed
 *.pid.lock
+config.bat
