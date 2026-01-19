@@ -78,7 +78,7 @@ Follow these steps to set up the project locally.
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/neurobank-guardian.git
+git clone https://github.com/Yagna3903/NeuroBank-Guardian.git
 cd neurobank-guardian
 ```
 
